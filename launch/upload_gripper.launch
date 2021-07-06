@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<!-- Author: Prasanth Suresh (ps32611@uga.edu); Description: Uploades the Robotiq gripper urdf to the physical ur3e robot -->
+<!-- Do not edit/replicate without permission -->
+
+<launch>
+    <node name="gripper_upload" pkg="intera_interface" type="send_urdf_fragment.py" args="-f $(find ur3e_irl_project)/urdf/gripper.urdf.xacro -l right_hand -j right_gripper_base" />
+</launch>

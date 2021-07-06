@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Author: Prasanth Suresh (ps32611@uga.edu)
+ Description: ur3e Pick and Place launch file with some flexible parameters -->
+<!-- Do not edit/replicate without permission -->
+<launch>
+	<arg name="sortmethod" default="pick"/>
+	<node name="pnp_node" pkg="ur3e_irl_project" type="simple_pnp.py" output="screen" args="$(arg sortmethod)"/>
+	<!-- Two sort options for args: pick and roll;
+	     Usage example: roslaunch ur3e_irl_project pnp_node.launch sortmethod:="roll"-->
+	<!-- https://answers.ros.org/question/277622/roslaunch-command-line-args/?answer=277633#post-id-277633 -->
+</launch> 

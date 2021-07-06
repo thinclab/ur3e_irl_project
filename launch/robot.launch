@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<launch>
+<!-- Author: Prasanth Suresh (ps32611@uga.edu); -->
+<!-- Description: ur3e Physical Robot enabled and launched with joint trajectory action server and collision objects -->
+<!-- Do not edit/replicate without permission -->
+  <arg name="robot_ip" default="10.0.0.1" />
+  <arg name="kinematics_config"  default="$(find ur3e_irl_project)/config/ur3e_calibration.yaml" />
+  <arg name="headless_mode" default="True" />
+  <arg name="robot_description_file"  default="$(find ur3e_irl_project)/launch/ur3e_load.launch" />
+<include file="$(find ur_robot_driver)/launch/ur3e_bringup.launch">
+  <arg name="robot_ip" value="$(arg robot_ip)" />
+  <arg name="kinematics_config" value="$(arg kinematics_config)" />
+  <arg name="headless_mode" value="$(arg headless_mode)" />
+  <arg name="robot_description_file" value="$(arg robot_description_file)" />
+</include>
+<include file="$(find ur3e_moveit_config)/launch/demo.launch">
+  <arg name="use_rviz" value="false" />
+</include>
+ <!--Collision objects node -->
+ <!--node name="planning_scene_ur3e" pkg="ur3e_irl_project" type="planning_scene_ur3e" respawn="false" output="screen">
+ </node-->
+
+</launch>

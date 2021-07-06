@@ -1,0 +1,52 @@
+<?xml version="1.0"?> 
+<sdf version='1.6'>
+  <model name='onion'>
+    <link name='base_link'>
+      <pose frame=''>0 0 0 0 0 0</pose> <!-- make r = 1.5708 to make them upright -->
+      <inertial>
+        <pose frame=''>0 0 0 0 0 0</pose>
+        <mass>0.005</mass>	<!-- From 0.14kg to 0.005kg -->
+        <inertia>
+          <ixx>0.08333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.08333</iyy>
+          <iyz>0</iyz>
+          <izz>0.07780</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_fixed_joint_lump__box_collision_collision'>
+        <pose frame=''>0 0 0 0 0 0</pose>
+        <geometry>
+        <!-- <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://custom_onion.dae</uri>
+          </mesh> -->
+        <sphere>
+               <radius>.05</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose frame=''>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://custom_onion_bad.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <uri>__default__</uri>
+            <name>__default__</name>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
+    </link>
+	<!-- <plugin name="model_push" filename="libmodel_push.so"/> -->
+  </model>
+</sdf>
+

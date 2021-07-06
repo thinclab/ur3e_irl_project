@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+
+<!-- Author: Prasanth Suresh (ps32611@uga.edu); Description: Bin to store onions sorted by ur3e -->
+<!-- Do not edit/replicate without permission -->
+<robot name="onion_bin" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<xacro:arg name="onion_bin" default="false"/>
+<!--xacro:if value="$(arg onion_bin)"-->
+ <link name="world"/>
+ <joint name="world_bin_joint" type="fixed" >
+        <origin xyz="0.1 0.6 0" rpy="0.0 0.0 0.0"/>
+        <parent link="world" />
+        <child link="onion_bin"/>
+  </joint>
+
+ <link name="onion_bin">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur3e_irl_project/meshes/onion_bin.stl"/> 
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur3e_irl_project/meshes/onion_bin.stl"/> 
+      </geometry>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="6.92"/>
+      <inertia
+        ixx="1.11" ixy="0.0" ixz="0.0"
+        iyy="0.12" iyz="0.0"
+        izz="1.11"/>
+    </inertial>
+  </link>
+
+  <!-- Box height is 0.7 m. top center of box w.r.t base of ur3e is at (0.1, 0.6, -0.2) in moveit.
+  So in order to get the box to floor height, move it down by -(0.2+0.7) -->
+
+  <gazebo reference="onion_bin">
+    <material>Gazebo/Green</material>
+  </gazebo>
+<!--/xacro:if-->
+</robot>

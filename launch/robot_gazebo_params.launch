@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+<!-- Author: Saurabh Arora (sa08751@uga.edu); Clean up by Prasanth Suresh (ps32611@uga.edu)
+ Description: ur3e Gazebo launch file with some flexible parameters -->
+<!-- Do not edit/replicate without permission -->
+
+  <include file="$(find ur3e_irl_project)/launch/robot_gazebo.launch">
+    <arg name="robotiqgripper" default="true"/>
+    <arg name="launchconveyor" value="true"/>
+    <arg name="onion_bin" value="true"/>
+    <arg name="use_cylinder_end" value="false"/>
+    <arg name="launchmoveit" value="false"/>	<!-- Moveit is being launched from the spawn onion launch file.
+						     So, as long as you are running that, make sure to set this to false -->
+  </include>
+
+</launch> 

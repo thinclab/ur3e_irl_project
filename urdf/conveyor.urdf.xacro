@@ -1,0 +1,902 @@
+<?xml version="1.0"?>
+<robot name="conveyor_table" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- Author: Prasanth Suresh (ps32611@uga.edu); Description: Conveyor table to be used by ur3e -->
+<!-- Do not edit/replicate without permission -->
+
+<!--
+Belt Width:15.7inch ; 
+Belt Thickness:0.07inch ; 
+Conveyor Length:59inch
+Conveyor High:29.5inch  
+-->  
+  <xacro:arg name="gazebo" default="false"/>
+  <xacro:arg name="load_rollers" default="false"/>
+  <xacro:arg name="load_motors" default="false"/>
+  <xacro:arg name="load_railings" default="true"/>
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="darkgray">
+    <color rgba=".2 .2 .2 1"/>
+  </material>
+  <material name="darkred">
+    <color rgba=".5 .1 .1 1"/>
+  </material>
+  <material name="ur3e_red">
+    <color rgba=".5 .1 .1 1"/>
+  </material>
+  <material name="ur3e_gray">
+    <color rgba="0.75294 0.75294 0.75294 1"/>
+  </material>
+
+  <link name="world"/>
+  <joint name="world_to_frame" type="fixed">
+    <parent link="world"/>
+    <child link="frame"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+  </joint>
+
+    <link name="frame" type="fixed" >
+       <visual>
+	<origin rpy="0 0 0" xyz="0.75 -0.75 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/frame.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="0 0 0" xyz="0.75 -0.75 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/conveyor_box.stl"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0.01 0.75 0.46"/>
+       <mass value="29.18"/>
+      <inertia ixx="30.49" ixy="0.13" ixz="0.10" iyy="9.39" iyz="10.09" izz="22.63"/>
+      </inertial>
+    </link>
+
+  <joint name="frame_to_belt" type="fixed">
+    <origin rpy="0 0 0" xyz="0.75 0 0.73" />
+
+    <parent link="frame"/>
+    <child link="belt"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="belt" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/belt.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/belt.stl"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0.7 0"/>
+       <mass value="1.75"/>
+      <inertia ixx="1.21" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="1.2"/>
+    </inertial>
+    </link>
+
+<xacro:if value="$(arg load_railings)">
+
+<!-- The reason why these are initialized w.r.t the world frame is because
+we want floating joints above the conveyor and w.r.t the frame will not do that -->
+
+
+  <joint name="frame_railing1_joint" type="fixed" >
+        <origin xyz="0.6 0.0 0.82" rpy="0.0 0.0 0.0"/>
+        <parent link="world" />
+        <child link="railing1"/>
+  </joint>
+  <joint name="frame_railing2_joint" type="fixed" >
+        <origin xyz="0.9 0.0 0.82" rpy="0.0 0.0 0.0"/>
+        <parent link="world" />
+        <child link="railing2"/>
+  </joint>
+
+<link name="railing1">
+    <collision>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 1.5 0.01"/>-
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 1.5 0.01"/>-
+      </geometry>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1" ixy="0.0" ixz="0.0"
+        iyy="1" iyz="0.0"
+        izz="1"/>
+    </inertial>
+  </link>
+
+  <gazebo reference="railing1">
+      <mu1>0.0000001</mu1>
+      <mu2>0.0000001</mu2>
+  </gazebo>
+
+  <link name="railing2">
+    <collision>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 1.5 0.01"/>-
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 1.5 0.01"/>-
+      </geometry>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1" ixy="0.0" ixz="0.0"
+        iyy="1" iyz="0.0"
+        izz="1"/>
+    </inertial>
+  </link>
+
+  <gazebo reference="railing2">
+      <mu1>0.0000001</mu1>
+      <mu2>0.0000001</mu2>
+  </gazebo>
+
+</xacro:if>
+
+
+<xacro:if value="$(arg load_rollers)">
+  <joint name="frame_to_roller1" type="revolute">
+    <origin xyz="0.75 -0.7 0.73" rpy="0 0 0"/>
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller1"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+   <link name="roller1" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+  
+  <joint name="frame_to_roller2" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.6 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller2"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller2" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller3" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.5 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller3"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller3" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+      <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller4" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.4 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller4"/>
+    <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller4" type="fixed" > 
+       <visual>
+	    <origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		  <mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	    </geometry>
+      </visual>
+
+	  <collision>
+        <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	  </collision>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller5" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.3 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller5"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller5" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller6" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.2 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller6"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller6" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller7" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 -0.1 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller7"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller7" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller8" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller8"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller8" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller9" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.1 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller9"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller9" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller10" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.2 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller10"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller10" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller11" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.3 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller11"/>SpawnModel: Failure - entity format is invalid.
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller11" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller12" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.3 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller12"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller12" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller13" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.4 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller13"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller13" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller14" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.5 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller14"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>SpawnModel: Failure - entity format is invalid.
+   </joint>
+
+   <link name="roller14" type="fixed" >
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller15" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.6 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller15"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller15" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+
+   <joint name="frame_to_roller16" type="revolute">
+    <origin rpy="0 0 0" xyz="0.75 0.7 0.73" />
+    <axis xyz="1 0 0" />
+    <limit lower="0.0" upper="6.28319" effort="1000.0" velocity="0.5"/>
+    <parent link="frame"/>
+    <child link="roller16"/>
+   <xacro:if value="$(arg gazebo)">
+    <dynamics damping="10.0" friction="5.0"/>
+   </xacro:if>
+   </joint>
+
+   <link name="roller16" type="fixed" > 
+       <visual>
+	<origin rpy="0 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+	  </geometry>
+       </visual>
+
+	<collision>
+          <origin rpy="1.5708 0 0" xyz="0 0 0" />
+  	  <geometry>
+		<cylinder length="0.26" radius="0.04"/>
+	  </geometry>
+	</collision>
+
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="11.56"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.09" iyz="0" izz="0.09"/>
+    </inertial>
+    </link>
+</xacro:if>
+
+<xacro:if value="$(arg load_motors)">
+   <transmission name="tran1">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller1">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor1">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran2">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller2">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor2">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran3">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller3">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor3">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran4">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller4">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor4">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran5">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller5">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor5">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran6">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller6">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor6">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran7">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller7">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor7">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran8">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller8">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor8">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran9">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller9">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor9">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran10">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller10">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor10">
+	  <hardwareInterface>hardware_interface/ffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+ 
+  <transmission name="tran11">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller11">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor11">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission> 
+
+  <transmission name="tran12">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller12">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor12">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission> 
+
+  <transmission name="tran13">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller13">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor13">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission> 
+
+  <transmission name="tran14">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller14">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor14">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission> 
+  <transmission name="tran15">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller15">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor15">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission> 
+
+  <transmission name="tran16">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="frame_to_roller16">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="motor16">
+	  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+   </transmission>
+    <gazebo>
+	<static>false</static>
+	<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+	</plugin>
+	<robotNamespace>conveyor_table</robotNamespace>
+    </gazebo>
+</xacro:if>
+
+
+    <gazebo reference="frame">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="belt">
+        <material>Gazebo/FlatBlack</material>
+        <mu1>0.0000001</mu1>
+        <mu2>10.0</mu2>
+    </gazebo>
+
+</robot>

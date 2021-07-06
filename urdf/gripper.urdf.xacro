@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="c_model_open">
+    <joint name="robotiq_gripper_base_joint" type="fixed" >
+        <origin xyz="0.0 0.0 0.001" rpy="0.0 0.0 1.5707"/>
+        <parent link="right_hand" />
+        <child link="right_gripper_base" />
+    </joint>
+
+    <link name="right_gripper_base"/>
+
+    <joint name="robotiq_c_model_adapter" type="fixed" >
+        <origin xyz="0.0 0.0 0.09712" rpy="0.0 0.0 0.0"/>
+        <parent link="right_gripper_base" />
+        <child link="robotiq_c_model_link" />
+    </joint>
+
+    <link name="robotiq_c_model_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://ur3e_irl_project/meshes/c_model_open.dae" />
+		<!-- Create package robotiq_c_model_viz/meshes/ and put meshes in that if this path doesn't work -->
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://ur3e_irl_project/meshes/c_model_open_collision.stl" />
+		<!-- Create package robotiq_c_model_viz/meshes/ and put meshes in that if this path doesn't work -->
+            </geometry>
+        </collision>
+    </link>
+</robot>

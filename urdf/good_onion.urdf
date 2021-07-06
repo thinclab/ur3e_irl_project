@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="red_cylinder" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<gazebo reference="base_link">
+  <fdir1>0 1 0</fdir1>
+  <mu1>0</mu1>
+  <mu2>0</mu2>
+</gazebo>
+
+<material name="red">
+  <color rgba="0.8 0.0 0.0 1.0"/>
+</material>
+
+<link name="base_link">
+  <collision name="box_collision">
+     <origin xyz="0 0 0.0" rpy="3.14 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3e_irl_project/meshes/custom_onion.stl"/>
+      <!-- <sphere radius="0.02"/> -->
+<!--      <cylinder length="0.04" radius="0.02"/>-->
+<!--      <box size="0.02 0.02 0.03"/>-->
+    </geometry>
+  </collision>
+  <visual>
+    <origin xyz="0 0 0.0" rpy="3.14 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3e_irl_project/meshes/custom_onion.stl"/>
+      <!-- <sphere radius="0.02"/> -->
+<!--      <cylinder length="0.04" radius="0.02"/>-->
+<!--      <box size="0.02 0.02 0.03"/>-->
+    </geometry>
+  </visual>
+  <inertial>
+    <origin xyz="0 0 0.0" rpy="3.14 0 0"/>
+<!--     <mass value="0.14"/> --> 
+    <mass value="0.14"/>
+    <inertia
+      ixx="0.000254" ixy="0.0" ixz="0.0"
+      iyy="0.000254" iyz="0.0"
+      izz="0.000254"/>
+  </inertial>
+</link>
+
+<plugin name="model_push" filename="libmodel_push.so"/>
+
+</robot>

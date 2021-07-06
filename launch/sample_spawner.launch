@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<launch>
+
+<node args="-urdf -param red_cylinder_path -model red_cylinder" name="spawn_cylinder" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
+
+</launch>

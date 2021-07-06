@@ -1,0 +1,71 @@
+
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+  # Position Controllers ---------------------------------------
+  frame_to_roller1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller4
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller5_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller5
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller6_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller6
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller7_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller7
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller8_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller8
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller9_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller9
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller10_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller10
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller11_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller11
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller12_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller12
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller13_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller13
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller14_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller14
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller15_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller15
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  frame_to_roller16_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: frame_to_roller16
+    pid: {p: 100.0, i: 0.01, d: 10.0}

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
+    </contributor>
+    <created>2021-06-16T21:55:38</created>
+    <modified>2021-06-16T21:55:38</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images/>
+  <library_effects>
+    <effect id="_91_191_191-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.74902 0.74902 0.74902 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0 0 0 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">154</float>
+            </shininess>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="_91_191_191-material" name="_91_191_191">
+      <instance_effect url="#_91_191_191-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="leg_front_left-mesh" name="leg_front_left">
+      <mesh>
+        <source id="leg_front_left-mesh-positions">
+          <float_array id="leg_front_left-mesh-positions-array" count="24">-0.02539968 -0.02539974 0.622292 0.02539968 -0.02539974 0.622292 -0.02539968 0.02539956 0.622292 0.02539968 0.02539956 0.622292 0.02539968 -0.02539962 -0.622292 0.02539968 0.02539968 -0.622292 -0.02539968 -0.02539962 -0.622292 -0.02539968 0.02539968 -0.622292</float_array>
+          <technique_common>
+            <accessor source="#leg_front_left-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="leg_front_left-mesh-normals">
+          <float_array id="leg_front_left-mesh-normals-array" count="18">0 0 1 1 0 0 0 0 -1 -1 0 0 0 1 0 0 -1 0</float_array>
+          <technique_common>
+            <accessor source="#leg_front_left-mesh-normals-array" count="6" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="leg_front_left-mesh-map-0">
+          <float_array id="leg_front_left-mesh-map-0-array" count="72">-5.08 0 0 0 -5.08 5.08 -5.08 5.08 0 0 0 5.08 -124.46 0 0 0 -124.46 5.08 -124.46 5.08 0 0 0 5.08 -5.08 0 0 0 -5.08 5.08 -5.08 5.08 0 0 0 5.08 -124.46 0 0 0 -124.46 5.08 -124.46 5.08 0 0 0 5.08 62.23 2.54 -62.23 2.54 62.23 -2.54 62.23 -2.54 -62.23 2.54 -62.23 -2.54 62.23 2.54 -62.23 2.54 62.23 -2.54 62.23 -2.54 -62.23 2.54 -62.23 -2.54</float_array>
+          <technique_common>
+            <accessor source="#leg_front_left-mesh-map-0-array" count="36" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="leg_front_left-mesh-vertices">
+          <input semantic="POSITION" source="#leg_front_left-mesh-positions"/>
+        </vertices>
+        <triangles material="_91_191_191-material" count="12">
+          <input semantic="VERTEX" source="#leg_front_left-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#leg_front_left-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#leg_front_left-mesh-map-0" offset="2" set="0"/>
+          <p>0 0 0 1 0 1 2 0 2 2 0 3 1 0 4 3 0 5 1 1 6 4 1 7 3 1 8 3 1 9 4 1 10 5 1 11 4 2 12 6 2 13 5 2 14 5 2 15 6 2 16 7 2 17 6 3 18 0 3 19 7 3 20 7 3 21 0 3 22 2 3 23 7 4 24 2 4 25 5 4 26 5 4 27 2 4 28 3 4 29 0 5 30 6 5 31 1 5 32 1 5 33 6 5 34 4 5 35</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="visual_leg_front_left" name="visual_leg_front_left" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#leg_front_left-mesh" name="visual_leg_front_left">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="_91_191_191-material" target="#_91_191_191-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

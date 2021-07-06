@@ -1,0 +1,4 @@
+# service message for randomly claiming an onion (or first in a group) and then tracking its position
+bool inspect_single
+---
+bool success
