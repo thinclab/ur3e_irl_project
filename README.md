@@ -34,8 +34,6 @@ The following are the steps to be followed to get this package working:
    Also install:
    
           sudo apt install ros-<YOUR ROS DISTRO>-ros-controllers
-          
-          sudo apt install ros-<YOUR ROS DISTRO>-industrial-core
    
   2.) We need an upgraded IK solver for smooth working of Sawyer:
   
@@ -81,6 +79,8 @@ The following are the steps to be followed to get this package working:
           git clone https://github.com/ros-industrial/ur_msgs.git
           
           git clone https://github.com/fmauch/universal_robot.git
+          
+          git clone https://github.com/ros-industrial/industrial_core.git
           
    - Use the following command to update all your packages and drivers:
    
