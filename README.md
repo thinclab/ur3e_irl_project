@@ -76,8 +76,6 @@ The following are the steps to be followed to get this package working:
           
           git clone https://github.com/gavanderhoorn/industrial_robot_status_controller.git
           
-          git clone https://github.com/ros-industrial/ur_msgs.git
-          
           git clone https://github.com/fmauch/universal_robot.git
           
           git clone https://github.com/ros-industrial/industrial_core.git
