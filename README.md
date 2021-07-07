@@ -56,7 +56,7 @@ The following are the steps to be followed to get this package working:
       
   3.) Now that you have a catkin workspace setup, in you src folder, git clone the following packages:
   
-   - These packages have changes that are not a part of their default branches. Make sure you clone them from the links below.
+   - Follow [these](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#building) instructions first to get the drivers installed correctly.
 
           git clone https://github.com/thinclab/roboticsgroup_gazebo_plugins-1.git
       
@@ -75,8 +75,6 @@ The following are the steps to be followed to get this package working:
           git clone https://github.com/thinclab/ur3e_irl_project.git
           
           git clone https://github.com/gavanderhoorn/industrial_robot_status_controller.git
-          
-          git clone https://github.com/fmauch/universal_robot.git
           
           git clone https://github.com/ros-industrial/industrial_core.git
           
