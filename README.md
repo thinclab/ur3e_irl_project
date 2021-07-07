@@ -41,7 +41,7 @@ The following are the steps to be followed to get this package working:
    
      `sudo apt-get install ros-<YOUR-ROS-DISTRO>-trac-ik-kinematics-plugin`
      
-   - Then you need to find the kinematics.yaml file within sawyer_moveit_config folder and update this line: 
+   - Then you need to find the kinematics.yaml file within ur3e_moveit_config folder **after completing step 3** and update this line: 
    `kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin` to `kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin`
   
    - Here's the wiki [link](https://ros-planning.github.io/moveit_tutorials/doc/trac_ik/trac_ik_tutorial.html) for reference.
