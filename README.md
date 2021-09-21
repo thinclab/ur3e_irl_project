@@ -80,6 +80,21 @@ The following are the steps to be followed to get this package working:
           
           git clone https://github.com/ros-industrial/ur_msgs.git
           
+          git clone https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers.git
+          
+          git clone https://github.com/gavanderhoorn/industrial_robot_status_controller.git
+          
+          git clone https://github.com/UniversalRobots/Universal_Robots_Client_Library.git
+          
+          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_cartesian_control_msgs.git
+          
+          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_controllers_cartesian.git
+          
+          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_passthrough_controllers.git
+          
+          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_scaled_controllers.git
+          
+                    
    - Use the following command to update all your packages and drivers:
    
           sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade
