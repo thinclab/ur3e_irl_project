@@ -117,8 +117,18 @@ The following are the steps to be followed to get this package working:
    
          export GAZEBO_MODEL_PATH=$HOME/catkin_ws/src/ur3e_irl_project/meshes:$GAZEBO_MODEL_PATH
          
-  4.) To work on the real robot, make sure teh robot is in remote control mode on the control pendant, then ensure the correct ip address of your computer has been added to the pendant. Also ensure that the static ip of the robot has been correctly added to robot.launch file inside ur3e_irl_project/launch.
+  4.) To work on the real robot, make sure the robot is in remote control mode(check top right, beside the hamburger menu) on the teach pendant, then ensure the correct ip address of your computer has been added to the pendant(Installation menu -> URCaps -> External control -> Host IP). Also ensure that the ip of the robot(Top right Hamburger menu -> Settings -> System -> Network -> Check DHCP and note IP address(make sure the ethernet port has network connection and port is activated)) has been correctly added to robot.launch file under robot_ip arg, inside ur3e_irl_project/launch.
+  
+  4.1.) If you get an error like this: "Variable 'speed_slider_mask' is currently controlled by another RTDE client.", Installation menu -> Fieldbus -> EtherNet/IP -> Disable EtherNet/IP adapter.
+  
+  4.2.) For the OnRobot gripper, assuming you've already installed and configured the gripper driver, etc using URcaps, click on the UR+ symbol near the Hamburger menu -> Initialize.
   
   5.) Now run:
   
         roslaunch ur3e_irl_project robot.launch
+        
+  6.) If the robot happens to go into protective stop during execution, use the following commands:
+  
+          rosservice call /ur_hardware_interface/dashboard/unlock_protective_stop
+          
+          rosservice call /ur_hardware_interface/resend_robot_program
