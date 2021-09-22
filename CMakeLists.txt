@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface
   controller_manager
   message_generation
-  robotiq_2f_gripper_control
 )
 find_package(gazebo REQUIRED)
 link_directories(${GAZEBO_LIBRARY_DIRS})
@@ -58,7 +57,6 @@ add_dependencies(onion_blocks_spawner ur3e_irl_project_generate_messages_cpp)
 add_executable(onion_blocks_poses_publisher src/onion_blocks_poses_publisher.cpp)
 add_dependencies(onion_blocks_poses_publisher ur3e_irl_project_generate_messages_cpp)
 add_executable(planning_scene_ur3e src/planning_scene_ur3e.cpp)
-add_dependencies(robotiq_2f_gripper_control_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 target_link_libraries(planning_scene_ur3e ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(onion_blocks_spawner ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(onion_blocks_poses_publisher ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${GAZEBO_LIBRARIES})

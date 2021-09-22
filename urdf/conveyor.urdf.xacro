@@ -13,7 +13,7 @@ Conveyor High:29.5inch
   <xacro:arg name="gazebo" default="false"/>
   <xacro:arg name="load_rollers" default="false"/>
   <xacro:arg name="load_motors" default="false"/>
-  <xacro:arg name="load_railings" default="true"/>
+  <xacro:arg name="load_railings" default="false"/>
   <material name="white">
     <color rgba="1 1 1 1"/>
   </material>
@@ -44,14 +44,14 @@ Conveyor High:29.5inch
 
     <link name="frame" type="fixed" >
        <visual>
-	<origin rpy="0 0 0" xyz="0.75 -0.75 0" />
+	<origin rpy="0 0 0" xyz="0.5 -0.75 0" />
   	  <geometry>
 		<mesh filename="package://ur3e_irl_project/meshes/frame.stl"/>
 	  </geometry>
        </visual>
 
 	<collision>
-          <origin rpy="0 0 0" xyz="0.75 -0.75 0" />
+          <origin rpy="0 0 0" xyz="0.5 -0.75 0" />
   	  <geometry>
 		<mesh filename="package://ur3e_irl_project/meshes/conveyor_box.stl"/>
 	  </geometry>
@@ -65,7 +65,7 @@ Conveyor High:29.5inch
     </link>
 
   <joint name="frame_to_belt" type="fixed">
-    <origin rpy="0 0 0" xyz="0.75 0 0.73" />
+    <origin rpy="0 0 0" xyz="0.5 0 0.73" />
 
     <parent link="frame"/>
     <child link="belt"/>

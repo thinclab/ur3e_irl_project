@@ -3,7 +3,7 @@
 <!-- Author: Prasanth Suresh (ps32611@uga.edu); -->
 <!-- Description: ur3e Physical Robot enabled and launched with joint trajectory action server and collision objects -->
 <!-- Do not edit/replicate without permission -->
-  <arg name="robot_ip" default="10.0.0.1" />
+  <arg name="robot_ip" default="172.19.52.155" />
   <arg name="kinematics_config"  default="$(find ur3e_irl_project)/config/ur3e_calibration.yaml" />
   <arg name="headless_mode" default="True" />
   <arg name="robot_description_file"  default="$(find ur3e_irl_project)/launch/ur3e_load.launch" />
@@ -14,10 +14,12 @@
   <arg name="robot_description_file" value="$(arg robot_description_file)" />
 </include>
 <include file="$(find ur3e_moveit_config)/launch/demo.launch">
-  <arg name="use_rviz" value="false" />
+  <arg name="use_rviz" value="true" />
+  <arg name="load_robot_description" value="false"/>
 </include>
- <!--Collision objects node -->
- <!--node name="planning_scene_ur3e" pkg="ur3e_irl_project" type="planning_scene_ur3e" respawn="false" output="screen">
+<!-- Not to self: The collision objects node keeps dying for some reason, check that out! -->
+ <!--Collision objects node >
+ <node name="planning_scene_ur3e" pkg="ur3e_irl_project" type="planning_scene_ur3e" respawn="false" output="screen">
  </node-->
 
 </launch>

@@ -8,18 +8,18 @@
       <uri>model://sun</uri>
     </include>
     <model name="my_mesh">
-      <pose>0 0 0  0 0 0</pose>
+      <pose>0 0 0.27 1.59 0 0</pose>
       <static>true</static>
       <link name="body">
         <visual name="visual">
           <geometry>
-            <mesh><uri>model://onion_crate.STL</uri></mesh>
+            <mesh><uri>model://ventionassembly.stl</uri></mesh>
           </geometry>
         </visual>
       </link>
     </model>
 
-   <model name="onion">
+   <!--model name="onion">
       <pose>0.05725 -0.05745 0.051775  0 0 0.714</pose>
       <static>true</static>
       <link name="body">
@@ -29,6 +29,6 @@
           </geometry>
         </visual>
       </link>
-    </model>
+    </model-->
   </world>
 </sdf>

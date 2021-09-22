@@ -11,7 +11,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="head_display_img" default="$(find ur3e_gazebo)/share/images/ur3e_sdk_research.png"/>
+  <!--<arg name="head_display_img" default="$(find ur3e_gazebo)/share/images/ur3e_sdk_research.png"/> -->
 
   <!-- Add controller box collision shape to check for link collisions if set to true-->
   <arg name="controller_box" default="false"/>
@@ -42,16 +42,16 @@
   <arg name="onion_bin" default="true"/>
 
  <!-- Load Parameters to the ROS Parameter Server -->
-  <rosparam command="load" file="$(find ur3e_gazebo)/config/config.yaml" />
+  <rosparam command="load" file="$(find ur_gazebo)/config/config.yaml" />
   <rosparam command="load" file="$(find ur_description)/params/named_poses.yaml" />
-  <rosparam command="load" file="$(find ur3e_gazebo)/config/acceleration_limits.yaml" />
+  <rosparam command="load" file="$(find ur_gazebo)/config/acceleration_limits.yaml" />
  <!-- Set the desired parameter values -->
   <param name="robot/limb/right/root_name" value="base" />
-  <param name="img_path_head_display" value="$(arg head_display_img)"/>
+  <!--<param name="img_path_head_display" value="$(arg head_display_img)"/>
   <param if="$(arg electric_gripper)" name="robot/limb/right/tip_name"
          value="right_gripper_tip" />
   <param unless="$(arg electric_gripper)" name="robot/limb/right/tip_name"
-         value="right_hand" />
+         value="right_hand" /> -->
 
   <param name="robot/limb/right/camera_name" value="right_hand_camera" />
   <param if="$(arg electric_gripper)"     name="robot/limb/right/gravity_tip_name"

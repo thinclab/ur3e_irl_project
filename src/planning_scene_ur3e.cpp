@@ -56,8 +56,8 @@ collision_objects[0].mesh_poses[0].position.x = 1.0;
   /* A pose for the box (specified relative to frame_id) */
   geometry_msgs::Pose box_pose;
   box_pose.orientation.w = 1.0;
-  box_pose.position.x =  0.75;
-  box_pose.position.y = 0.0;
+  box_pose.position.x =  0.0;
+  box_pose.position.y = 0.6;
   box_pose.position.z = -0.46;
 
   collision_objects[0].primitives.push_back(primitive);

@@ -191,7 +191,7 @@
       </collision>
     </link>
 
-<!--    <link name="world">
+   <link name="world">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <mass value="0.001"/>
@@ -202,7 +202,7 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="conveyor_base"/>
-  </joint>-->
+  </joint>
     
     <link name="conveyor_base">
       <inertial>
