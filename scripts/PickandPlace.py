@@ -17,8 +17,6 @@ from geometry_msgs.msg import (
     Quaternion,
 )
 from tf.transformations import quaternion_from_euler
-import intera_interface
-from robotiq_2f_gripper_control.srv import move_robot, move_robotResponse
 from ur3e_irl_project.msg import onions_blocks_poses
 from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
 from moveit_msgs.msg import Constraints, OrientationConstraint, PositionConstraint
@@ -287,7 +285,7 @@ class PickAndPlace(object):
         g.allowed_touch_objects = [self.req.model_name_1]
         g.max_contact_force = 0
         grasps.append(copy.deepcopy(g))
-        print 'Successfully created grasps!'
+        print('Successfully created grasps!')
         return grasps
 
 
@@ -348,9 +346,9 @@ class PickAndPlace(object):
         current_pose = group.get_current_pose().pose
         allow_replanning = False
         planning_time = 10
-        print "\nAttempting to reach {},{},{}".format(self.target_location_x,
+        print("\nAttempting to reach {},{},{}".format(self.target_location_x,
                                                      self.target_location_y,
-                                                     current_pose.position.z)
+                                                     current_pose.position.z))
         threshold = 0.02
         status = self.go_to_pose_goal(self.q[0], self.q[1], self.q[2], self.q[3], self.target_location_x,
                                        self.target_location_y,
@@ -417,7 +415,7 @@ class PickAndPlace(object):
         # pnp._limb.endpoint_pose returns {'position': (x, y, z), 'orientation': (x, y, z, w)}
         # moving from z=-.02 to z=-0.1
 
-        # print "Attempting to lift gripper"
+        # print("Attempting to lift gripper")
         group = self.group
         while self.target_location_x == -100:
             rospy.sleep(0.05)
@@ -445,7 +443,7 @@ class PickAndPlace(object):
         allow_replanning = False
         planning_time = 10
         lifted = False
-        # print "Current z pose: ", current_pose.position.z
+        # print("Current z pose: ", current_pose.position.z)
         z_pose = current_pose.position.z + 0.08
         while not lifted:
             lifted = self.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, current_pose.position.x,
@@ -455,7 +453,7 @@ class PickAndPlace(object):
             # current_pose = group.get_current_pose().pose
             rospy.sleep(0.01)
         group.clear_path_constraints()
-        # print "Successfully lifted gripper to z: ", current_pose.position.z
+        # print("Successfully lifted gripper to z: ", current_pose.position.z)
 
         return True
 ###################################################################################################################################
@@ -515,7 +513,7 @@ class PickAndPlace(object):
 #                self.move_to_start(joint_angles)
                 rospy.sleep(0.05)
 
-            # print "diff:"+str(diff)
+            # print("diff:"+str(diff))
         # self.go_to_joint_goal(joint_angles)
         # print("reached home")
         return True
@@ -550,7 +548,7 @@ class PickAndPlace(object):
 
         group = self.group
         current_joints = group.get_current_joint_values()
-        # print '\nCurrent Joints: \n',current_joints
+        # print('\nCurrent Joints: \n',current_joints)
 
         if (current_joints[5] + 3.1415926535) >= 4.712389:  # If rotating in one direction exceeds max angle(270), go the other way.
             clockwise = {'elbow_joint': current_joints[0],
@@ -580,15 +578,15 @@ class PickAndPlace(object):
         allow_replanning = False
         planning_time = 5
         reached = False
-        # print "Attempting to reach the bin"
+        # print("Attempting to reach the bin")
         while not reached:
             reached = self.go_to_pose_goal(self.q[0], self.q[1], self.q[2], self.q[3], -0.2, -0.2, 1.50,
                                            allow_replanning, planning_time, tolerance)
             rospy.sleep(0.02)
 
-        print "Reached bin: ", reached
+        print("Reached bin: ", reached)
         # current_pose = group.get_current_pose().pose
-        # print "current_pose: " + str((current_pose))
+        # print("current_pose: " + str((current_pose)))
         return reached
 
     def roll(self, tolerance=0.01, goal_tol=0.01, orientation_tol=0.01):
@@ -643,8 +641,8 @@ class PickAndPlace(object):
                                             allow_replanning, planning_time, tolerance)
         rospy.sleep(0.02)
         # current_pose = group.get_current_pose().pose
-        # print "Current gripper pose: ", current_pose
-        # print "Over the conveyor now!"
+        # print("Current gripper pose: ", current_pose)
+        # print("Over the conveyor now!")
         return onConveyor
 
 ############################################## END OF CLASS ##################################################

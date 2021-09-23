@@ -11,109 +11,24 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <!--<arg name="head_display_img" default="$(find ur3e_gazebo)/share/images/ur3e_sdk_research.png"/> -->
-
-  <!-- Add controller box collision shape to check for link collisions if set to true-->
-  <arg name="controller_box" default="false"/>
-  <!-- This argument loads the electric gripper, for example electric_gripper:=true -->
-  <arg name="electric_gripper" default="false"/>
-  <!-- This argument loads ur3e's pedestal URDF -->
-  <arg name="pedestal" default="true"/>
-  <!-- This argument fixes the robot statically to the world -->
-  <arg name="static" default="true"/>
-  <!-- This argument dictates whether gazebo should be launched in this file -->
-  <arg name="load_gazebo" default="true"/>
-  <!-- This argument sets the initial joint states -->
-  <arg name="initial_joint_states"
-    default=" -J ur3e::right_j0 -0.040330078125
-              -J ur3e::right_j1 -1.1118330078125
-              -J ur3e::right_j2 0.0276318359375
-              -J ur3e::right_j3 2.1849912109375
-              -J ur3e::right_j4 -0.0525625
-              -J ur3e::right_j5 0.4793486328125
-              -J ur3e::right_j6 1.7502451171875
-              -J ur3e::head_pan 0.00"/>
   
+  <!-- This argument sets the initial joint states -->
+  <!-- <arg name="initial_joint_states"
+    default=" -J ur3e::elbow_joint 0
+              -J ur3e::shoulder_lift_joint 0
+              -J ur3e::shoulder_pan_joint 0
+              -J ur3e::wrist_1_joint 0
+              -J ur3e::wrist_2_joint 0
+              -J ur3e::wrist_3_joint 0"/> -->
+
   <!-- Custom arguments -->
-  <arg name="robotiqgripper" default="true"/>
-  <arg name="launchconveyor" default="true"/>
-  <arg name="use_cylinder_end" default="false"/>
-  <arg name="launchmoveit" default="true"/>
-  <arg name="onion_bin" default="true"/>
+  <arg name="launchconveyor" default="false"/>
+  <arg name="launchmoveit" default="false"/>
+  <arg name="onion_bin" default="false"/>
 
- <!-- Load Parameters to the ROS Parameter Server -->
-  <rosparam command="load" file="$(find ur_gazebo)/config/config.yaml" />
-  <rosparam command="load" file="$(find ur_description)/params/named_poses.yaml" />
-  <rosparam command="load" file="$(find ur_gazebo)/config/acceleration_limits.yaml" />
- <!-- Set the desired parameter values -->
-  <param name="robot/limb/right/root_name" value="base" />
-  <!--<param name="img_path_head_display" value="$(arg head_display_img)"/>
-  <param if="$(arg electric_gripper)" name="robot/limb/right/tip_name"
-         value="right_gripper_tip" />
-  <param unless="$(arg electric_gripper)" name="robot/limb/right/tip_name"
-         value="right_hand" /> -->
-
-  <param name="robot/limb/right/camera_name" value="right_hand_camera" />
-  <param if="$(arg electric_gripper)"     name="robot/limb/right/gravity_tip_name"
-         value="right_gripper_tip" />
-  <param unless="$(arg electric_gripper)" name="robot/limb/right/gravity_tip_name"
-         value="right_hand" />
-
- <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ur3e_irl_project)/urdf/ur3e_combined.urdf.xacro gazebo:=true electric_gripper:=$(arg electric_gripper) pedestal:=true static:=true robotiqgripper:=$(arg robotiqgripper)  
- launchconveyor:=$(arg launchconveyor) use_cylinder_end:=$(arg use_cylinder_end)" />
-
-
-  <!-- startup simulated world --> 
-  <include if="$(arg load_gazebo)" file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find ur3e_irl_project)/worlds/ur3e_lab.world"/>
-    <arg name="debug" value="$(arg debug)" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="headless" value="$(arg headless)"/>
+  <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
+    <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
   </include>
-
- <!-- Publish a static transform between the world and the base of the robot -->
-  <node if="$(arg static)" pkg="tf2_ros" type="static_transform_publisher"
-	name="base_to_world" args="0 0 0 0 0 0 1 world base" />
-
-  <include file="$(find ur3e_sim_controllers)/launch/ur3e_sim_controllers.launch">
-      <arg name="electric_gripper" value="$(arg electric_gripper)"/>
-      <arg name="gui" value="$(arg gui)" />
-  </include>
-
- <!-- Start joint trajectory action server to publish joint states -->
-  <node name="ur3e_joint_trajectory_action_server" pkg="intera_interface" type="joint_trajectory_action_server.py"/>
-
- <!-- Start everything required for the robotiq gripper -->
-  <group if="$(arg robotiqgripper)">
-    <rosparam file="$(find robotiq_2f_85_gripper_visualization)/config/robotiq_2f_85_control.yaml" command="load"/>
-    
-    <node name="joint_state_publisher" pkg="robotiq_2f_gripper_joint_state_publisher" type="robotiq_2f_gripper_joint_states">
-        <remap from="input" to="/gripper/input"/>
-        <remap from="joint_states" to="/robot/joint_states"/>
-    </node>
-    
-    <include file="$(find robotiq_2f_gripper_action_server)/launch/robotiq_2f_gripper_action_server_gazebo.launch">
-    </include>
-  </group>
-
-  <!-- ur3e cameras launch file -->
-  <arg name="wrist_camera" default="right_hand_camera" />
-  <arg name="head_camera"  default="head_camera" />
-  <include file="$(find ur3e_gazebo)/launch/ur3e_sim_cameras.launch">
-      <arg name="wrist_camera" value="$(arg wrist_camera)" />
-      <arg name="head_camera" value="$(arg head_camera)" />
-  </include>
-
-  <!-- Publish a static transform between the world and the base of the robot -->
-  <node pkg="rosbag" type="play" name="io_robot" args="-l $(find ur3e_gazebo)/share/bags/robot_io.bag" />
-
-
-  <!-- spawn in gazebo -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-param robot_description -urdf -z 0.93 -model ur3e $(arg initial_joint_states)" />
-
 
   <!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') ==true)"> -->
   <group if="$(arg launchconveyor)">
@@ -129,11 +44,8 @@
 
  <!-- Start everything needed for moveit -->
  <group if="$(arg launchmoveit)">
-  <node name="planning_scene_ur3e" pkg="ur3e_irl_project" type="planning_scene_ur3e" respawn="false" output="screen">
-    <rosparam command="load" file="$(find ur3e_moveit_config)/config/kinematics.yaml"/>
-  </node>
-  <include file="$(find ur3e_moveit_config)/launch/ur3e_moveit.launch">
-    <arg name="electric_gripper" value="$(arg electric_gripper)"/>
+  <include file="$(find ur3e_moveit_config)/launch/demo.launch">
+    <arg name="load_robot_description" value="false"/>
   </include>
   </group>
  
