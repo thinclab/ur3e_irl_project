@@ -1,6 +1,23 @@
 <?xml version="1.0" ?>
 <launch>
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
 
-<node args="-urdf -param red_cylinder_path -model red_cylinder" name="spawn_cylinder" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <!--include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include-->
 
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <!-- Conveyor spawning in gazebo -->
+ <param name="onion_description" command="$(find xacro)/xacro $(find ur3e_irl_project)/urdf/bad_onion.urdf gazebo:=true"/> 
+ <node args="-urdf -param onion_description -model bad_onion" name="spawn_onion" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
 </launch>

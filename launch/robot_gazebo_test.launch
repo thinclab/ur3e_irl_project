@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<!-- Author: Prasanth Suresh (ps32611@uga.edu); Description: ur3e Gazebo launch file with Robotiq gripper, conveyor and ur3e_lab; -->
+<!-- Do not edit/replicate without permission -->
+
+<launch>
+  <arg name="onion_bin" value="false"/>
+  
+  
+  <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
+      <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
+  </include>
+
+ 
+ <!-- Adding a bin to store onions after sorting -->
+  <group if="$(arg onion_bin)">
+   <param name="onion_bin" command="$(find xacro)/xacro $(find ur3e_irl_project)/urdf/onion_bin.urdf.xacro"/> 
+   <node args="-urdf -param onion_bin -model onion_bin" name="spawn_onion_bin" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
+  </group>
+
+ 
+</launch> 

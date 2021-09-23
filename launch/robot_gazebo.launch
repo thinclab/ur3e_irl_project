@@ -3,15 +3,36 @@
 <!-- Do not edit/replicate without permission -->
 <launch>
 
-<arg name="onion_bin" default="false"/>
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  
+  <!-- This argument sets the initial joint states -->
+  <!-- <arg name="initial_joint_states"
+    default=" -J ur3e::elbow_joint 0
+              -J ur3e::shoulder_lift_joint 0
+              -J ur3e::shoulder_pan_joint 0
+              -J ur3e::wrist_1_joint 0
+              -J ur3e::wrist_2_joint 0
+              -J ur3e::wrist_3_joint 0"/> -->
 
-<include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
-  <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" doc="Launch file which populates the 'robot_description' parameter."/>
-</include>
+  <!-- Custom arguments -->
+  <arg name="launchconveyor" default="false"/>
+  <arg name="launchmoveit" default="false"/>
+  <arg name="onion_bin" default="false"/>
 
-<!--include file="$(find ur3e_moveit_config)/launch/demo.launch">
-  <arg name="use_rviz" value="true" />
-</include-->
+  <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
+    <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
+  </include>
+
+  <!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') ==true)"> -->
+  <group if="$(arg launchconveyor)">
+    <param name="conveyor" command="$(find xacro)/xacro $(find ur3e_irl_project)/urdf/conveyor.urdf.xacro"/> 
+    <node args="-urdf -param conveyor -model conveyor" name="spawn_conveyor" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
+  </group>
  
  <!-- Adding a bin to store onions after sorting -->
 <group if="$(arg onion_bin)">
@@ -19,4 +40,11 @@
  <node args="-urdf -param onion_bin -model onion_bin" name="spawn_onion_bin" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
 </group>
 
+ <!-- Start everything needed for moveit -->
+ <group if="$(arg launchmoveit)">
+  <include file="$(find ur3e_moveit_config)/launch/demo.launch">
+    <arg name="load_robot_description" value="false"/>
+  </include>
+  </group>
+ 
 </launch> 
