@@ -46,14 +46,14 @@ Conveyor High:29.5inch
        <visual>
 	<origin rpy="0 0 0" xyz="0.75 -0.75 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/frame.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/frame.stl"/>
 	  </geometry>
        </visual>
 
 	<collision>
           <origin rpy="0 0 0" xyz="0.75 -0.75 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/conveyor_box.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/conveyor_box.stl"/>
 	  </geometry>
 	</collision>
 
@@ -78,14 +78,14 @@ Conveyor High:29.5inch
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/belt.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/belt.stl"/>
 	  </geometry>
        </visual>
 
 	<collision>
           <origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/belt.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/belt.stl"/>
 	  </geometry>
 	</collision>
 
@@ -191,7 +191,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -224,7 +224,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -257,7 +257,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -290,7 +290,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	    <origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		  <mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		  <mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	    </geometry>
       </visual>
 
@@ -323,7 +323,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -356,7 +356,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -389,7 +389,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -422,7 +422,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -455,7 +455,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -488,7 +488,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -521,7 +521,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -554,7 +554,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -587,7 +587,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -620,7 +620,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -653,7 +653,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 
@@ -686,7 +686,7 @@ we want floating joints above the conveyor and w.r.t the frame will not do that 
        <visual>
 	<origin rpy="0 0 0" xyz="0 0 0" />
   	  <geometry>
-		<mesh filename="package://ur3e_irl_project/meshes/roller.stl"/>
+		<mesh filename="package://ur3e_irl_project/meshes/lab_conveyor/roller.stl"/>
 	  </geometry>
        </visual>
 

@@ -4,7 +4,7 @@
 <robot name="ur3e" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:include filename="$(find ur_description)/urdf/ur3e.xacro"/>
 
-  <xacro:include filename="$(find ur3e_irl_project)/urdf/conveyor_g_path.urdf.xacro"/>
+  <!--xacro:include filename="$(find ur3e_irl_project)/urdf/conveyor_g_path.urdf.xacro"/-->
   <xacro:include filename="$(find ur3e_irl_project)/onrobot_sg/models/onrobot_sg_b/sg_b.urdf"/>
 
   <link name="world" />
@@ -49,12 +49,12 @@
     <child link="quick_change_robot_side"/>
   </joint>
 
-  <!-- fix the conveyor belt in place -->
+  <!-- fix the conveyor belt in place >
   <joint name="world_to_conveyor_base" type="fixed">
     <origin xyz="0 0.065 1.26458" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="conveyor_base"/>
-  </joint>
+  </joint-->
 
   <joint name="fixed" type="fixed">
       <parent link="world"/>
@@ -62,3 +62,4 @@
   </joint>
  
 </robot>
+
