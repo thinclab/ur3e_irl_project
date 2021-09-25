@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import rospy
@@ -22,8 +22,6 @@ from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
 from moveit_msgs.msg import Constraints, OrientationConstraint, PositionConstraint
 import copy
 import random
-
-
 
 class PickAndPlace(object):
     def __init__(self, init_node = True, limb='right', tip_name="right_gripper_tip"):
@@ -73,6 +71,7 @@ class PickAndPlace(object):
 
         req = AttachRequest()
         if init_node:
+            print("Initializing rosnode - pnp_node")
             rospy.init_node('pnp_node', anonymous=True, disable_signals=False)
             self._limb_name = limb  # string
 #            self._limb = intera_interface.Limb(limb)

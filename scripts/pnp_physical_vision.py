@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from PickandPlace import PickAndPlace
 from gripper_to_position import reset_gripper, activate_gripper, gripper_to_pos
@@ -107,7 +107,7 @@ class Get_info(State):
                 # rospy.sleep(5)
                 return 'updated'
             else:
-                print '\nSort Complete!\n'
+                print ('\nSort Complete!\n')
                 return 'completed'
         else:
             userdata.counter += 1
@@ -133,7 +133,7 @@ class Claim(State):
         if len(userdata.color) == 0:
             return 'not_found'
         max_index = len(userdata.color)
-        print '\nMax index is = ', max_index
+        print ('\nMax index is = ', max_index)
         pnp.onion_index = 0
         for i in range(max_index):
             if len(userdata.y) >= i:
@@ -148,16 +148,15 @@ class Claim(State):
                         break
                     else:
                         done_onions += 1
-                        print '\nDone onions = ', done_onions
-
+                        print ('\nDone onions = ', done_onions)
                 except IndexError:
                     pass
             else:
-                print '\nSort complete!'
+                print ('\nSort complete!')
                 return 'completed'
 
         if max_index == done_onions:
-            print '\nAll onions are sorted!'
+            print ('\nAll onions are sorted!')
             return 'completed'
         else:
             done_onions = 0
@@ -166,7 +165,7 @@ class Claim(State):
             userdata.counter += 1
             return 'not_updated'
         else:
-            print '\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z
+            print('\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z)
             reset_gripper()
             activate_gripper()
             userdata.counter = 0
@@ -274,7 +273,7 @@ class Liftup(State):
                 if self.grasp == False:
                     return 'no_grasp'
                 else:
-                    print "\nSuccessfully grasped and lifted"
+                    print ("\nSuccessfully grasped and lifted")
                     userdata.counter = 0
                     '''NOTE: Both place on conveyor and pick use this, so don't update current state here.'''
                     return 'success'
@@ -285,15 +284,15 @@ class Liftup(State):
     def callback_graspCheck(self, msg):
         for i in range(len(msg.x)):
             if pnp.target_location_z - 0.05 <= msg.z[i] <= pnp.target_location_z + 0.05:
-                print "\nZ value that matched: ", msg.z[i]
+                print ("\nZ value that matched: ", msg.z[i])
                 if pnp.target_location_x - 0.05 <= msg.x[i] <= pnp.target_location_x + 0.05:
-                    print "\nX value that matched: ",msg.x[i] 
+                    print ("\nX value that matched: ",msg.x[i] )
                     if pnp.target_location_y - 0.05 <= msg.y[i] <= pnp.target_location_y + 0.05:
-                        print "\nY value that matched: ",msg.y[i]
+                        print ("\nY value that matched: ",msg.y[i])
                         # rospy.sleep(20)
                         self.grasp = False
-                    else: print "\nY value didn't match"
-                else: print "\nX value didn't match"
+                    else: print ("\nY value didn't match")
+                else: print ("\nX value didn't match")
 
 
 class View(State):
@@ -311,16 +310,16 @@ class View(State):
             return 'timed_out'
         
         if pnp.onion_color == 1:    # Inspect further only if it is an unblemished one
-            print "\nChecking color before rotation"
+            print( "\nChecking color before rotation")
             self.checkOnionColor()
             rotate = pnp.rotategripper(0.3)
             rospy.sleep(1)
             if rotate:
-                print "\nSuccessfully Rotated!"
+                print ("\nSuccessfully Rotated!")
                 self.checkOnionColor()
                 if self.color != None:
                     current_state = int(vals2sid(ol=1, eefl=1, pred=self.color, listst=2))
-                    print "\nCurrent state is: ", current_state
+                    print ("\nCurrent state is: ", current_state)
                     # rospy.sleep(100)
                     userdata.counter = 0
                     return 'success'
@@ -335,7 +334,7 @@ class View(State):
             self.color = int(pnp.onion_color)
             if self.color != None:
                 current_state = int(vals2sid(ol=1, eefl=1, pred=self.color, listst=2))
-                print "\nCurrent state is: ", current_state
+                print ("\nCurrent state is: ", current_state)
                 # rospy.sleep(100)
                 return 'success'
             else:
@@ -356,9 +355,9 @@ class View(State):
         color = int(pnp.onion_color)
         if self.color != None:
             if self.color != color and self.color == 0:
-                print '\nUpdating onion color as: ', self.color
+                print ('\nUpdating onion color as: ', self.color)
             else:
-                print '\nRetaining onion color as: ', color
+                print ('\nRetaining onion color as: ', color)
                 self.color = color
         else: pass
 
@@ -367,10 +366,10 @@ class View(State):
         if max(msg.z) >= 0.85:
             idx = msg.x.index(max(msg.x))
             self.color = msg.color[idx]
-            print '\nFound onion in hand. Color is: ', self.color
+            print ('\nFound onion in hand. Color is: ', self.color)
             # print '\nOnion z value: ', msg.z[idx]
         else:
-            print "\nCouldn't find the onion in hand\n"
+            print ("\nCouldn't find the onion in hand\n")
             # print 'Here are the zs: \n', msg.z
 
 
@@ -396,7 +395,7 @@ class Placeonconveyor(State):
             if lift:
                 userdata.counter = 0
                 current_state = vals2sid(ol=0, eefl=0, pred=2, listst=2)
-                print '\nCurrent state after placing on conveyor: ', current_state
+                print ('\nCurrent state after placing on conveyor: ', current_state)
                 return 'success'
             else:
                 userdata.counter += 1
@@ -424,7 +423,7 @@ class Placeinbin(State):
         if place:
             userdata.counter = 0
             current_state = vals2sid(ol=2, eefl=2, pred=2, listst=2)
-            print '\nCurrent state after placing in bin: ', current_state
+            print ('\nCurrent state after placing in bin: ', current_state)
             return 'success'
         else:
             userdata.counter += 1

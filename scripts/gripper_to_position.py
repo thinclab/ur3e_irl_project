@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import rospy
-#from robotiq_2f_gripper_control.msg import _Robotiq2FGripper_robot_output  as outputMsg
-#from robotiq_2f_gripper_control.msg import _Robotiq2FGripper_robot_input  as inputMsg
 from time import sleep
 from std_msgs.msg import String
 from std_srvs.srv import Trigger

@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "onion_blocks_spawner");
     ros::NodeHandle nh; //("~");
     int i = 0 /*index the onions*/, j = 0 /*position reference for onions*/;
-    int onion_gen = 0, total_onions = 4;
+    int onion_gen = 0, total_onions = 8;
     double initial_pose_x, initial_pose_y, height_spawning, spawning_interval,
         conveyor_center_x, belt_width, wrench_duration, randpos, object_width;
     bool spawn_multiple;

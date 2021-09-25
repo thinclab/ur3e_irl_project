@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import pnp_physical_vision as ppv
 
 def ClaimNewOnion():
@@ -181,7 +181,7 @@ def PlaceOnConveyor():
 def main():
     policy = ppv.np.genfromtxt('/home/prasanth/catkin_ws/src/ur3e_irl_project/scripts/expert_policy.csv', delimiter=' ')
     actList = {0:InspectAfterPicking, 1:PlaceOnConveyor, 2:PlaceInBin, 3:Pick, 4:ClaimNewOnion} 
-    # print "\nI'm in main now!"
+    # print ("\nI'm in main now!")
     ppv.rospy.init_node('policy_exec_phys', anonymous=True, disable_signals=False)
     rgbtopic = '/kinect2/hd/image_color_rect'
     depthtopic = '/kinect2/hd/image_depth_rect'
