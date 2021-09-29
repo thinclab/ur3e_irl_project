@@ -30,7 +30,7 @@
       </collision>
   </link>
   
-  <!--link name="rear_pillars">
+  <link name="rear_pillars">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <mass value="10.0"/>
@@ -49,9 +49,9 @@
           <box size="0.8 0.05 1.55"/>
         </geometry>
       </collision>
-  </link-->
+  </link>
   
-  <!-- <link name="vention_assembly">
+   <!-- <link name="vention_assembly">
       <inertial>
         <origin xyz="-1.25 -0.8 0" rpy="1.6 0 0"/>
         <mass value="16.45"/>
@@ -79,30 +79,30 @@
     <child link="support_pillar"/>
   </joint>
 
-  <!--joint name="world_to_assembly" type="fixed">
+  
+  <joint name="pillar_to_base" type="fixed">
+  <origin xyz="0 0 0.6" rpy="0 0 0"/>
+  <parent link="support_pillar"/>
+  <child link="base_link"/>
+  </joint>
+  
+  <joint name="pillar_to_rear_pillars" type="fixed">
+  <origin xyz="0 -0.37 0.8" rpy="0 0 0"/>
+  <parent link="support_pillar"/>
+  <child link="rear_pillars"/>
+</joint>
+  
+  <!-- <joint name="world_to_assembly" type="fixed">
     <origin xyz="0 0 0.0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="vention_assembly"/>
-  </joint-->
-
-  <joint name="pillar_to_base" type="fixed">
-    <origin xyz="0 0 0.6" rpy="0 0 0"/>
-    <parent link="support_pillar"/>
-    <child link="base_link"/>
-  </joint>
-  
-  <!--joint name="pillar_to_rear_pillars" type="fixed">
-    <origin xyz="0 -0.37 0.8" rpy="0 0 0"/>
-    <parent link="support_pillar"/>
-    <child link="rear_pillars"/>
-  </joint-->
-  
+  </joint> -->
   <!-- <joint name="vention_to_base" type="fixed">
-    <origin xyz="0 0 0.85" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="vention_assembly"/>
     <child link="base_link"/>
-  </joint> -->
-      
+  </joint>  -->
+
   <joint name="ur_to_gripper" type="fixed">
     <origin xyz="0 0 0.0" rpy="0 0 0"/>
     <parent link="tool0"/>
@@ -116,9 +116,35 @@
     <child link="conveyor_base"/>
   </joint-->
 
-  <joint name="fixed" type="fixed">
+  <!-- <joint name="fixed" type="fixed">
       <parent link="world"/>
-      <child link="base"/>
-  </joint>
+      <child link="base_link"/>
+  </joint> -->
+ 
+  <gazebo reference="support_pillar">
+      <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="rear_pillars">
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <!-- <gazebo reference="vention_assembly">
+      <selfCollide>true</selfCollide>
+  </gazebo> -->
+  <gazebo reference="quick_change_robot_side">
+      <selfCollide>true</selfCollide>
+  </gazebo>
+  
+  <disable_collisions link1="base_link" link2="support_pillar" reason="Adjacent" />
+  <!-- <disable_collisions link1="base_link" link2="vention_assembly" reason="Adjacent" /> -->
+  <disable_collisions link1="tool0" link2="quick_change_robot_side" reason="Adjacent" />
+  
+ 
+  <gazebo>
+      <plugin name="ros_control" filename="libgazebo_ros_control.so">
+        <!--robotNamespace>/</robotNamespace-->
+        <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+      </plugin>
+    </gazebo>
+ 
  
 </robot>

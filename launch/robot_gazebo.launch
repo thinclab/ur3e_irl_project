@@ -3,12 +3,14 @@
 <!-- Do not edit/replicate without permission -->
 <launch>
 
-  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
+  <!-- these are the arguments you can pass this launch file, for example sim:=true -->
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
+  <arg name="sim" default="true" />
+  
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>
   
   <!-- This argument sets the initial joint states -->
   <!-- <arg name="initial_joint_states"
@@ -20,9 +22,9 @@
               -J ur3e::wrist_3_joint 0"/> -->
 
   <!-- Custom arguments -->
-  <arg name="launchconveyor" default="false"/>
-  <arg name="launchmoveit" default="false"/>
-  <arg name="onion_bin" default="false"/>
+  <arg name="launchconveyor" default="true"/>
+  <arg name="launchmoveit" default="true"/>
+  <arg name="onion_bin" default="true"/>
 
   <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
     <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
@@ -30,8 +32,9 @@
 
   <!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') ==true)"> -->
   <group if="$(arg launchconveyor)">
-    <param name="conveyor" command="$(find xacro)/xacro $(find ur3e_irl_project)/urdf/conveyor.urdf.xacro"/> 
-    <node args="-urdf -param conveyor -model conveyor" name="spawn_conveyor" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model"/>
+    <include file="$(find ur3e_irl_project)/launch/conveyor_gazebo.launch">
+    <arg name="gazebo_launch" default="false" />
+  </include>
   </group>
  
  <!-- Adding a bin to store onions after sorting -->
