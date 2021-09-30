@@ -134,12 +134,10 @@ The following are the steps to be followed to get this package working:
           rosservice call /ur_hardware_interface/resend_robot_program
 
   7.) In order to use the robot in simulation, run:
-          
-          roslaunch ur3e_irl_project robot_gazebo.launch
 
        The following arguments could be sent through commandline to control different aspects:
 
-          Use lab conveyor:        conv_name:=lab 
+          Select conveyor:        conv_name:=lab 
                                 or conv_name:=vovrc
                                 
           Use onion bin:           onion_bin:=True
@@ -147,3 +145,7 @@ The following are the steps to be followed to get this package working:
           Use launchconveyor:      launchconveyor:=True
 
           Use launchmoveit:        launchmoveit:=True
+          
+       Example usage:          
+       
+          roslaunch ur3e_irl_project robot_gazebo.launch conv_name:=lab 
