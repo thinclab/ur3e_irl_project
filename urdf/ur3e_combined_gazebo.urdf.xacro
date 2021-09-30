@@ -18,14 +18,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="0.15 0.15 1.2"/>
+          <box size="0.8 0.5 0.7"/>
         </geometry>
         <material name="4,4,4"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="0.15 0.15 1.2"/>
+          <box size="0.8 0.5 0.7"/>
         </geometry>
       </collision>
   </link>
@@ -39,14 +39,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="0.8 0.05 1.55"/>
+          <box size="0.8 0.05 1"/>
         </geometry>
         <material name="4,4,4"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="0.8 0.05 1.55"/>
+          <box size="0.8 0.05 1"/>
         </geometry>
       </collision>
   </link>
@@ -74,20 +74,20 @@
   
   <!-- fix the ur robot in place -->
   <joint name="world_to_pillar" type="fixed">
-    <origin xyz="0 0 0.6" rpy="0 0 0"/>
+    <origin xyz="0 -0.15 0.35" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="support_pillar"/>
   </joint>
 
   
   <joint name="pillar_to_base" type="fixed">
-  <origin xyz="0 0 0.6" rpy="0 0 0"/>
+  <origin xyz="0 0.15 0.35" rpy="0 0 0"/>
   <parent link="support_pillar"/>
   <child link="base_link"/>
   </joint>
   
   <joint name="pillar_to_rear_pillars" type="fixed">
-  <origin xyz="0 -0.37 0.8" rpy="0 0 0"/>
+  <origin xyz="0 -0.25 0.7" rpy="0 0 0"/>
   <parent link="support_pillar"/>
   <child link="rear_pillars"/>
 </joint>

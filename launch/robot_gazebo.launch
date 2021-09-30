@@ -3,15 +3,6 @@
 <!-- Do not edit/replicate without permission -->
 <launch>
 
-  <!-- these are the arguments you can pass this launch file, for example sim:=true -->
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
-  <arg name="sim" default="true" />
-  
-  <!-- Remap follow_joint_trajectory -->
-  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>
-  
   <!-- This argument sets the initial joint states -->
   <!-- <arg name="initial_joint_states"
     default=" -J ur3e::elbow_joint 0
@@ -24,7 +15,9 @@
   <!-- Custom arguments -->
   <arg name="launchconveyor" default="true"/>
   <arg name="launchmoveit" default="true"/>
-  <arg name="onion_bin" default="true"/>
+  <arg name="onion_bin" default="false"/>
+  <arg name="conv_name" default="lab" />
+  <arg name="sim" default="true" />
 
   <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
     <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
@@ -34,6 +27,7 @@
   <group if="$(arg launchconveyor)">
     <include file="$(find ur3e_irl_project)/launch/conveyor_gazebo.launch">
     <arg name="gazebo_launch" default="false" />
+    <arg name="conv_name" default="$(arg conv_name)"/> <!-- Two values are lab and vovrc -->
   </include>
   </group>
  
@@ -45,6 +39,8 @@
 
  <!-- Start everything needed for moveit -->
  <group if="$(arg launchmoveit)">
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>  
   <include file="$(find ur3e_moveit_config)/launch/demo.launch">
     <arg name="load_robot_description" value="false"/>
   </include>
