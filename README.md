@@ -56,17 +56,13 @@ The following are the steps to be followed to get this package working:
       
   3.) Now that you have a catkin workspace setup, in you src folder, git clone the following packages:
   
-   - Follow [these](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#building) instructions first to get the drivers installed correctly.
+   - Follow [these](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#building) instructions first to get the drivers installed correctly. If you have cloned fmauch_universal_robot package from the instructions in the link, remove it and clone the following:
+          
+          git clone --branch calibration_devel https://github.com/thinclab/universal_robot
 
           git clone https://github.com/thinclab/roboticsgroup_gazebo_plugins-1.git
       
           git clone https://github.com/pal-robotics/gazebo_ros_link_attacher/tree/melodic-devel.git
-      
-          git clone https://github.com/thinclab/kinect_v2_udrf.git
-          
-          git clone https://github.com/thinclab/velocity_plugin.git
-          
-          git clone https://github.com/thinclab/iai_kinect2.git
           
           git clone https://github.com/thinclab/sanet_onionsorting.git
           
@@ -79,20 +75,6 @@ The following are the steps to be followed to get this package working:
           git clone https://github.com/ros-industrial/industrial_core.git
           
           git clone https://github.com/ros-industrial/ur_msgs.git
-          
-          git clone https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers.git
-          
-          git clone https://github.com/gavanderhoorn/industrial_robot_status_controller.git
-          
-          git clone https://github.com/UniversalRobots/Universal_Robots_Client_Library.git
-          
-          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_cartesian_control_msgs.git
-          
-          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_controllers_cartesian.git
-          
-          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_passthrough_controllers.git
-          
-          git clone https://github.com/UniversalRobots/Universal_Robots_ROS_scaled_controllers.git
           
                     
    - Use the following command to update all your packages and drivers:
