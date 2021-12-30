@@ -5,21 +5,37 @@
 <!-- Do not edit/replicate without permission -->
   <arg name="robot_ip" default="172.19.52.155" />
   <arg name="kinematics_config"  default="$(find ur3e_irl_project)/config/ur3e_calibration.yaml" />
-  <arg name="headless_mode" default="True" />
+  <arg name="headless_mode" default="true" />
+  <arg name="pipeline" default="ompl" />
   <arg name="robot_description_file"  default="$(find ur3e_irl_project)/launch/ur3e_load.launch" />
+  <!-- The text file path for SRDF -->
+  <arg name="textfile" default="$(find ur3e_irl_project)/config/ur3e_combined.srdf" />
+
 <include file="$(find ur_robot_driver)/launch/ur3e_bringup.launch">
   <arg name="robot_ip" value="$(arg robot_ip)" />
   <arg name="kinematics_config" value="$(arg kinematics_config)" />
   <arg name="headless_mode" value="$(arg headless_mode)" />
   <arg name="robot_description_file" value="$(arg robot_description_file)" />
 </include>
-<include file="$(find ur3e_moveit_config)/launch/demo.launch">
-  <arg name="use_rviz" value="true" />
-  <arg name="load_robot_description" value="false"/>
+
+<!-- Custom arguments -->
+<arg name="launchconveyor" default="true"/>
+<arg name="conv_name" default="lab" /> <!-- Two values are lab and vovrc -->
+<arg name="rviz_gui" default="true" />
+
+<!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') ==true)"> -->
+<group if="$(arg launchconveyor)">
+  <include file="$(find ur3e_irl_project)/launch/conveyor_gazebo.launch">
+  <arg name="gazebo_launch" default="false" />
+  <arg name="conv_name" default="$(arg conv_name)"/> 
 </include>
-<!-- Not to self: The collision objects node keeps dying for some reason, check that out! -->
- <!--Collision objects node >
- <node name="planning_scene_ur3e" pkg="ur3e_irl_project" type="planning_scene_ur3e" respawn="false" output="screen">
- </node-->
+</group>
+<include file="$(find ur3e_moveit_config)/launch/demo.launch">
+  <arg name="fake_execution" default="false"/>
+  <arg name="rviz_gui" default="$(arg rviz_gui)"/>
+  <arg name="load_robot_description" value="false"/>
+  <arg name="pipeline" value="$(arg pipeline)"/>
+  <arg name="textfile" value="$(arg textfile)" />
+</include>
 
 </launch>

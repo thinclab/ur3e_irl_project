@@ -7,6 +7,10 @@
   <!--xacro:include filename="$(find ur3e_irl_project)/urdf/conveyor_g_path.urdf.xacro"/-->
   <xacro:include filename="$(find ur3e_irl_project)/onrobot_sg/models/onrobot_sg_b/sg_b.urdf"/>
 
+  <material name="ur3e_gray">
+    <color rgba="0.75294 0.75294 0.75294 1" />
+  </material>
+
   <link name="world" />
   
   <link name="support_pillar">
@@ -16,11 +20,11 @@
         <inertia ixx="0.38299" ixy="0" ixz="0" iyy="31.09613" iyz="0" izz="31.47895"/>
       </inertial>
       <visual>
+        <material name="ur3e_gray"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <box size="0.8 0.8 0.8"/>
         </geometry>
-        <material name="4,4,4"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -37,11 +41,11 @@
         <inertia ixx="0.38299" ixy="0" ixz="0" iyy="31.09613" iyz="0" izz="31.47895"/>
       </inertial>
       <visual>
+        <material name="ur3e_gray"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <box size="0.8 0.05 1.55"/>
         </geometry>
-        <material name="4,4,4"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>

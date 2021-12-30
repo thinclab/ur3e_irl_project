@@ -58,7 +58,9 @@ class PickAndPlace(object):
         group = moveit_commander.MoveGroupCommander(group_name, wait_for_servers=5.0)
         # See ompl_planning.yaml for a complete list
         group.set_planner_id("RRTConnectkConfigDefault")
-        #group.set_planner_id("TRRTkConfigDefault")
+        # group.set_planner_id("BiEST")
+        # group.set_planner_id("trajopt_interface/TrajOptPlanner")
+        # group.set_planner_id("LazyPRMStar")
 
         display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                        moveit_msgs.msg.DisplayTrajectory,
@@ -142,7 +144,7 @@ class PickAndPlace(object):
             rospy.logerr(
                 "No Joint Angles provided for move_to_joint_positions. Staying put.")
 
-    # This is an intera based IK method - Doesn't know about collision objects
+    # This is an intera based IK method - Doesn't know about collision object. This is currently not used!
     def _servo_to_pose(self, pose, time=4.0, steps=400.0):
         ''' An *incredibly simple* linearly-interpolated Cartesian move '''
         r = rospy.Rate(1/(time/steps)) # Defaults to 100Hz command rate
@@ -216,7 +218,7 @@ class PickAndPlace(object):
 
         group.clear_pose_targets()
 
-        current_pose = group.get_current_pose().pose
+        # current_pose = group.get_current_pose().pose
         # return self.all_close(pose_goal, current_pose, thresh)
         return True
 
@@ -359,7 +361,7 @@ class PickAndPlace(object):
         # return dip
         return status
 
-    def staticDip(self, z_pose = 0.1, tolerance=0.055):
+    def staticDip(self, gripper_length = 0.1, tolerance=0.055):
         
         group = self.group
         current_pose = group.get_current_pose().pose
@@ -371,7 +373,7 @@ class PickAndPlace(object):
         position_constraint.link_name = group.get_end_effector_link()
         position_constraint.header.frame_id = group.get_planning_frame()
         orientation_constraint = OrientationConstraint()
-        orientation_constraint.orientation = Quaternion(x=self.q[0], y=self.q[1], z=self.q[2], w=self.q[3])
+        orientation_constraint.orientation = group.get_current_pose().pose.orientation
         orientation_constraint.absolute_x_axis_tolerance = 0.3
         orientation_constraint.absolute_y_axis_tolerance = 0.3
         orientation_constraint.absolute_z_axis_tolerance = 0.3
@@ -388,10 +390,10 @@ class PickAndPlace(object):
         before_dip = current_pose.position.z
         # dip = False
         # while not dip: 
-        print(self.target_location_x, self.target_location_y, z_pose)
+        # print(self.target_location_x, self.target_location_y, gripper_length)
         dip = self.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, self.target_location_x,  # accounting for tolerance error
                                 self.target_location_y,  # accounting for tolerance error
-                                z_pose,  # This is where we dip
+                                self.target_location_z + gripper_length,  # For UR, eef frame is wrist_3, so we add the gripper_length to that for right amount of dip
                                 allow_replanning, planning_time, tolerance/3)
         current_pose = group.get_current_pose().pose
         print("after dip", current_pose)
@@ -415,7 +417,7 @@ class PickAndPlace(object):
         # pnp._limb.endpoint_pose returns {'position': (x, y, z), 'orientation': (x, y, z, w)}
         # moving from z=-.02 to z=-0.1
 
-        # print("Attempting to lift gripper")
+        print("Attempting to lift gripper")
         group = self.group
         while self.target_location_x == -100:
             rospy.sleep(0.05)
@@ -427,7 +429,7 @@ class PickAndPlace(object):
         position_constraint.link_name = group.get_end_effector_link()
         position_constraint.header.frame_id = group.get_planning_frame()
         orientation_constraint = OrientationConstraint()
-        orientation_constraint.orientation = Quaternion(x=self.q[0], y=self.q[1], z=self.q[2], w=self.q[3])
+        orientation_constraint.orientation = group.get_current_pose().pose.orientation
         orientation_constraint.absolute_x_axis_tolerance = 0.3
         orientation_constraint.absolute_y_axis_tolerance = 0.3
         orientation_constraint.absolute_z_axis_tolerance = 0.3
@@ -439,12 +441,12 @@ class PickAndPlace(object):
         constraint.orientation_constraints.append(orientation_constraint)
         constraint.position_constraints.append(position_constraint)
         group.set_path_constraints(constraint)
-        current_pose = group.get_current_pose().pose
         allow_replanning = False
         planning_time = 10
         lifted = False
-        # print("Current z pose: ", current_pose.position.z)
-        z_pose = current_pose.position.z + 0.08
+        current_pose = group.get_current_pose().pose
+        print("Current z pose: ", current_pose.position.z)
+        z_pose = current_pose.position.z + 0.125
         while not lifted:
             lifted = self.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, current_pose.position.x,
                                            current_pose.position.y, 
@@ -519,30 +521,46 @@ class PickAndPlace(object):
         # print("reached home")
         return True
 
-    def view(self, tolerance=0.01, goal_tol=0.01, orientation_tol=0.01):
+    def view(self, tol=0.01, goal_tol=0.01, orientation_tol=0.01):
 
-        home_joint_angles = {'right_j0': -0.041662954890248294,
-                        'right_j1': -1.0258291091425074,
-                        'right_j2': 0.0293680414401436,
-                        'right_j3': 2.17518162913313,
-                        'right_j4': -0.06703022873354225,
-                        'right_j5': 0.3968371433926965,
-                        'right_j6': 1.7659649178699421}
+        print("Attempting to reach viewpoint\n")
+        group = self.group
+        view_joint_angles = [-1.2217128276824951, -2.1831122837462367, -1.3320048491107386, -3.136397501031393, 2.564589023590088, 0.04503623768687248]
+        joint_angles = {'elbow_joint': view_joint_angles[0],
+                        'shoulder_lift_joint': view_joint_angles[1],
+                        'shoulder_pan_joint': view_joint_angles[2],
+                        'wrist_1_joint': view_joint_angles[3],
+                        'wrist_2_joint': view_joint_angles[4],
+                        'wrist_3_joint': view_joint_angles[5]}
+        current_joints = self.group.get_current_joint_values()
+        diff = abs(joint_angles['elbow_joint']-current_joints[0]) > tol or \
+            abs(joint_angles['shoulder_lift_joint']-current_joints[1]) > tol or \
+            abs(joint_angles['shoulder_pan_joint']-current_joints[2]) > tol or \
+            abs(joint_angles['wrist_1_joint']-current_joints[3]) > tol or \
+            abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
+            abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
 
-        joint_angles = {'right_j0': 0.7716502133436203,
-                        'right_j1': -0.25253308083711357,
-                        'right_j2': -0.9156571119870254,
-                        'right_j3': 1.6775039734444164,
-                        'right_j4': 2.969104448028304,
-                        'right_j5': -2.2600790124759307,
-                        'right_j6': -2.608939978894689}
-
-        home = self.go_to_joint_goal(home_joint_angles)
-        if home:
+        while diff:
+            self.go_to_joint_goal(view_joint_angles, True, 5.0, goal_tol=goal_tol,
+                                  orientation_tol=orientation_tol)
             rospy.sleep(0.05)
-            view = self.go_to_joint_goal(joint_angles)
+            # measure after movement
+            current_joints = group.get_current_joint_values()
 
-        return view
+            diff = abs(joint_angles['elbow_joint']-current_joints[0]) > tol or \
+                abs(joint_angles['shoulder_lift_joint']-current_joints[1]) > tol or \
+                abs(joint_angles['shoulder_pan_joint']-current_joints[2]) > tol or \
+                abs(joint_angles['wrist_1_joint']-current_joints[3]) > tol or \
+                abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
+                abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
+            if diff:
+#                self.move_to_start(joint_angles)
+                rospy.sleep(0.05)
+
+            # print("diff:"+str(diff))
+        # self.go_to_joint_goal(joint_angles)
+        # print("reached view")
+        return True
 
 
     def rotategripper(self, tolerance=0.01, goal_tol=0.01, orientation_tol=0.01):
@@ -567,7 +585,7 @@ class PickAndPlace(object):
                         'wrist_3_joint': current_joints[5] + (3.1415926535 / 2)}
 
 #        done = self.go_to_joint_goal(clockwise)
-        done = True
+        done = True     # NOTE: We have disabled rotation by bypassing the prev line, uncomment prev line and comment this to implement rotation.
         rospy.sleep(0.01)
 
         return done
@@ -593,7 +611,7 @@ class PickAndPlace(object):
         else:
 
             group = self.group
-            bin_joint_angles = [-3.0432432333575647, -2.5122820339598597, -0.61946702003479, -1.5734607181944789, 1.5675392150878906, -1.4726555983172815]
+            bin_joint_angles = [-2.8, -2.5122820339598597, -0.61946702003479, -1.5734607181944789, 1.5675392150878906, -1.4726555983172815]
 
             joint_angles = {'elbow_joint': bin_joint_angles[0],
                             'shoulder_lift_joint': bin_joint_angles[1],
@@ -627,53 +645,16 @@ class PickAndPlace(object):
                 if diff:
     #                self.move_to_start(joint_angles)
                     rospy.sleep(0.05)
-
-            # bin_joint_angles = [-0.13254475593566895, -2.8001285992064417, -3.000226084386007, -1.8611179790892542, 1.701681137084961, -1.6498258749591272]
-
-            # joint_angles = {'elbow_joint': -0.13254475593566895,
-            #             'shoulder_lift_joint': -2.8001285992064417,
-            #             'shoulder_pan_joint': -3.000226084386007,
-            #             'wrist_1_joint': -1.8611179790892542,
-            #             'wrist_2_joint': 1.701681137084961,
-            #             'wrist_3_joint': -1.6498258749591272}
-
-            # current_joints = self.group.get_current_joint_values()
-            # tol = tolerance
-            # diff = abs(joint_angles['elbow_joint']-current_joints[0]) > tol or \
-            #     abs(joint_angles['shoulder_lift_joint']-current_joints[1]) > tol or \
-            #     abs(joint_angles['shoulder_pan_joint']-current_joints[2]) > tol or \
-            #     abs(joint_angles['wrist_1_joint']-current_joints[3]) > tol or \
-            #     abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
-            #     abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol 
-
-            # while diff:
-            #     self.go_to_joint_goal(bin_joint_angles, False, 5.0, goal_tol=goal_tol,
-            #                         orientation_tol=orientation_tol)
-            #     rospy.sleep(0.05)
-            #     # measure after movement
-            #     current_joints = group.get_current_joint_values()
-
-            #     diff = abs(joint_angles['elbow_joint']-current_joints[0]) > tol or \
-            #     abs(joint_angles['shoulder_lift_joint']-current_joints[1]) > tol or \
-            #     abs(joint_angles['shoulder_pan_joint']-current_joints[2]) > tol or \
-            #     abs(joint_angles['wrist_1_joint']-current_joints[3]) > tol or \
-            #     abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
-            #     abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol 
-
-            #     if diff:
-            #     #     self.move_to_start(joint_angles)
-            #         rospy.sleep(0.05)
-            reached = True
-        
+            reached = True       
         return reached
 
     def goto_placeOnConv(self, tolerance=0.01, goal_tol=0.01, orientation_tol=0.01):
 
         allow_replanning = False
         planning_time = 10
-        # print("Attempting to reach home\n")
+        print("Attempting to reach place on conv\n")
         group = self.group
-        conv_joint_angles = [-2.0386155287372034, -2.3408719501891078, -0.02574896812438965, -2.2846952877440394, 1.7111601829528809, -0.6787141005145472]
+        conv_joint_angles = [-0.2363308221101761, -2.3734213314452113, -0.4973037878619593, -2.0139085255064906, 1.5427601337432861, 0.05646385997533798]
 
         joint_angles = {'elbow_joint': conv_joint_angles[0],
                             'shoulder_lift_joint': conv_joint_angles[1],
@@ -716,18 +697,20 @@ class PickAndPlace(object):
         allow_replanning = False
         planning_time = 5
         group = self.group
-        miny = 0.3
-        maxy = 0.6
-        minx = -0.60
-        maxx = -0.30
+        ori = group.get_current_pose().pose.orientation
+        miny = 0.25
+        maxy = 0.45
+        minx = -0.45
+        maxx = -0.25
         yval = miny + (maxy-miny)*random.random()
         xval = minx + (maxx-minx)*random.random()
-        onConveyor = self.go_to_pose_goal(self.q[0], self.q[1], self.q[2], self.q[3], xval, yval, 1.5,
+        current_pose = self.group.get_current_pose().pose
+        onConveyor = self.go_to_pose_goal(ori.x,ori.y,ori.z,ori.w, xval, yval, current_pose.position.z,
                                             allow_replanning, planning_time, tolerance)
         rospy.sleep(0.02)
         # current_pose = group.get_current_pose().pose
         # print("Current gripper pose: ", current_pose)
-        # print("Over the conveyor now!")
+        print("Over the conveyor now!")
         return onConveyor
 
 ############################################## END OF CLASS ##################################################

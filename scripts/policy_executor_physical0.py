@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import pnp_physical_vision as ppv
+import rospkg
 
 def ClaimNewOnion():
     # Create a SMACH state machine
@@ -179,9 +180,18 @@ def PlaceOnConveyor():
 
 
 def main():
-    policy = ppv.np.genfromtxt('/home/prasanth/catkin_ws/src/ur3e_irl_project/scripts/expert_policy.csv', delimiter=' ')
+    rospack = rospkg.RosPack()  # get an instance of RosPack with the default search paths
+    path = rospack.get_path('ur3e_irl_project')   # get the file path for ur3e_irl_project
+    if len(ppv.sys.argv) < 1:
+            print ("Default policy - expert chosen")
+            policyfile = "expert.csv"
+    else:
+        policyfile = ppv.sys.argv[1]
+        print ("\n{} chosen".format(policyfile))
+    
+    policy = ppv.np.genfromtxt(path+'/scripts/'+ policyfile, delimiter=' ')
     actList = {0:InspectAfterPicking, 1:PlaceOnConveyor, 2:PlaceInBin, 3:Pick, 4:ClaimNewOnion} 
-    # print ("\nI'm in main now!")
+    # print "\nI'm in main now!"
     ppv.rospy.init_node('policy_exec_phys', anonymous=True, disable_signals=False)
     rgbtopic = '/kinect2/hd/image_color_rect'
     depthtopic = '/kinect2/hd/image_depth_rect'
@@ -189,14 +199,14 @@ def main():
     choice = 'real'
     # camera = ppv.Camera('kinectv2', rgbtopic, depthtopic, camerainfo, choice)
     # ppv.getCameraInstance(camera)
-    ppv.pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+    # ppv.pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
     outcome = actList[4]()    
     while not ppv.rospy.is_shutdown() and outcome != 'SORT COMPLETE':
-        print('\n OUTCOME: ', outcome)
+        print ('\n OUTCOME: ', outcome)
         # ppv.rospy.sleep(10)
         try:
-            print('\nCurrent state is: ',ppv.current_state)
-            print('\nExecuting action: ',policy[ppv.current_state])
+            print ('\nCurrent state is: ',ppv.current_state)
+            print ('\nExecuting action: ',policy[ppv.current_state])
             outcome = actList[policy[ppv.current_state]]()
             if outcome == 'TIMED_OUT' or outcome == 'FAILED':
                 print("\nTimed out/Failed, so going back to claim again!")
@@ -206,9 +216,10 @@ def main():
         except KeyboardInterrupt:
             ppv.rospy.signal_shutdown("Shutting down node, Keyboard interrupt received!")
     # ppv.rospy.spin()
+        
 if __name__ == '__main__':
     # print("\nCalling Main!")
     try:
         main()
     except ppv.rospy.ROSInterruptException:
-        print("Main function not found! WTH dude!")
+        print ("Main function not found! WTH dude!")

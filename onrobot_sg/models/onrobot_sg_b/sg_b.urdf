@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <!-- created with Phobos 1.0.1 "Capricious Choutengan" -->
   <robot name="sg-b">
+    <material name="blue">
+      <color rgba="0.0 0.0 0.8 1.0"/>
+    </material>
+  
+    <material name="green">
+      <color rgba="0.0 0.8 0.0 1.0"/>
+    </material>
+  
+    <material name="grey">
+      <color rgba="0.2 0.2 0.2 1.0"/>
+    </material>
     <link name="quick_change_robot_side">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -12,12 +23,12 @@
         <geometry>
           <mesh filename="package://ur3e_irl_project/onrobot_sg/models/common/Quick_Changer_Robot Side_v2.dae" scale="1 1 1"/>
         </geometry>
-        <material name="191,191,191"/>
+        <material name="grey"/>
       </visual>
       <collision>
         <origin xyz="0 0 0.008" rpy="0 0 0"/>
         <geometry>
-          <cylinder length="0.015" radius="0.036"/>
+          <cylinder length="0.015" radius="0.045"/>	<!-- original radius: 0.036, changed to account for input wire -->
         </geometry>
       </collision>
     </link>
@@ -33,7 +44,7 @@
         <geometry>
           <mesh filename="package://ur3e_irl_project/onrobot_sg/models/onrobot_sg_b/meshes/SG-b_v1.dae" scale="1 1 1"/>
         </geometry>
-        <material name="191,191,191"/>
+        <material name="blue"/>
       </visual>
       <collision>
         <origin xyz="0 0 0.05" rpy="0 0 0"/>

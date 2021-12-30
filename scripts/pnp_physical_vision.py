@@ -136,9 +136,9 @@ class Claim(State):
         print ('\nMax index is = ', max_index)
         pnp.onion_index = 0
         for i in range(max_index):
-            if len(userdata.y) >= i:
+            if len(userdata.x) >= i:    # Sometimes we get color but no location, so double-checking.
                 try:
-                    if userdata.x[i] > -0.35 and userdata.x[i] < 0.35:
+                    if userdata.x[i] > -0.25 and userdata.x[i] < 0.25:  # Numbers estd using current conv.
                         pnp.target_location_x = userdata.x[i]
                         pnp.target_location_y = userdata.y[i]
                         pnp.target_location_z = userdata.z[i]
@@ -165,7 +165,7 @@ class Claim(State):
             userdata.counter += 1
             return 'not_updated'
         else:
-            print('\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z)
+            # print('\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z)
             reset_gripper()
             activate_gripper()
             userdata.counter = 0
@@ -189,7 +189,7 @@ class Approach(State):
 
         # home = pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
         home = True
-        gripper_to_pos(50, 60, 200, False)    # GRIPPER TO POSITION 0
+        gripper_to_pos(50, 60, 200, False)    # GRIPPER TO POSITION 50
         rospy.sleep(0.1)
         if home:
             status = pnp.goAndPick()
@@ -218,7 +218,7 @@ class Dipdown(State):
             userdata.counter = 0
             return 'timed_out'
 
-        dip = pnp.staticDip(z_pose=1.35)
+        dip = pnp.staticDip(gripper_length=0.1625)    # EEf frame is wrist3, so factoring in the gripper height.
         rospy.sleep(0.1)
         if dip:
             userdata.counter = 0
@@ -241,7 +241,7 @@ class Grasp_object(State):
             userdata.counter = 0
             return 'timed_out'
 
-        gr = gripper_to_pos(255, 60, 200, False)    # GRIPPER TO POSITION 60
+        gr = gripper_to_pos(150, 60, 200, False)    # GRIPPER TO POSITION 150
         rospy.sleep(2)
         if gr:
             userdata.counter = 0
@@ -278,7 +278,7 @@ class Liftup(State):
                     '''NOTE: Both place on conveyor and pick use this, so don't update current state here.'''
                     return 'success'
             else:
-                userdata.counter += 10.0363871693106,0.381861362699,1.60594109992
+                userdata.counter += 1
                 return 'failed'
 
     def callback_graspCheck(self, msg):
@@ -310,12 +310,10 @@ class View(State):
             return 'timed_out'
         
         if pnp.onion_color == 1:    # Inspect further only if it is an unblemished one
-            print( "\nChecking color before rotation")
-            self.checkOnionColor()
-            rotate = pnp.rotategripper(0.3)
+            viewpoint = pnp.view(0.1)     # We're showing to the camera behind UR
             rospy.sleep(1)
-            if rotate:
-                print ("\nSuccessfully Rotated!")
+            if viewpoint:
+                print ("\Reached viewpoint!")
                 self.checkOnionColor()
                 if self.color != None:
                     current_state = int(vals2sid(ol=1, eefl=1, pred=self.color, listst=2))
@@ -363,8 +361,8 @@ class View(State):
 
     def callback_prediction(self, msg):
 
-        if max(msg.z) >= 0.85:
-            idx = msg.x.index(max(msg.x))
+        if max(msg.z) >= 0.85 and min(msg.y) <= 0.25:   # The closest onion to the camera
+            idx = msg.y.index(min(msg.y))
             self.color = msg.color[idx]
             print ('\nFound onion in hand. Color is: ', self.color)
             # print '\nOnion z value: ', msg.z[idx]
@@ -386,23 +384,28 @@ class Placeonconveyor(State):
             userdata.counter = 0
             return 'timed_out'
 
-        place = pnp.placeOnConveyor()
-        rospy.sleep(0.05)
-        if place:
-            detach = gripper_to_pos(0, 60, 200, False)    # GRIPPER TO POSITION 0
-            lift = pnp.liftgripper()
-            rospy.sleep(0.01)
-            if lift:
-                userdata.counter = 0
-                current_state = vals2sid(ol=0, eefl=0, pred=2, listst=2)
-                print ('\nCurrent state after placing on conveyor: ', current_state)
-                return 'success'
+        place1 = pnp.goto_placeOnConv()
+        if place1:
+            place2 = pnp.placeOnConveyor()
+            rospy.sleep(0.05)
+            if place2:
+                detach = gripper_to_pos(0, 60, 200, False)    # GRIPPER TO POSITION 0
+                lift = pnp.liftgripper()
+                rospy.sleep(0.01)
+                if lift:
+                    userdata.counter = 0
+                    current_state = vals2sid(ol=0, eefl=0, pred=2, listst=2)
+                    print ('\nCurrent state after placing on conveyor: ', current_state)
+                    return 'success'
+                else:
+                    userdata.counter += 1
+                    return 'failed'
             else:
                 userdata.counter += 1
                 return 'failed'
         else:
-            userdata.counter += 1
-            return 'failed'
+                userdata.counter += 1
+                return 'failed'
 
 
 class Placeinbin(State):

@@ -10,7 +10,7 @@
   <param name="ObjectPoseZ_RANGE_LOWER_LIMIT" value="0.78" type="double"/>
   <param name="initial_pose_y_to_RANGE_LIMIT" value="-0.05" type="double"/>
   <param name="initial_pose_x" value="0.0" type="double"/>	<!-- x = 0.9 -->
-  <param name="initial_pose_y" value="0.2" type="double"/>	<!-- y = -0.59 -->
+  <param name="initial_pose_y" value="0.45" type="double"/>	<!-- y = -0.59 -->
   <param name="conveyor_center_x" value="0.75" type="double"/>
   <param name="belt_width" value="0.3" type="double"/>
   <param name="height_spawning" value="1.2" type="double"/>

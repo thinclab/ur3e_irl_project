@@ -50,6 +50,12 @@
         </geometry>
       </collision>
   </link>
+
+  <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
+  
+  <xacro:sensor_d435 name="camera" topics_ns="camera" parent="world" publish_pointcloud="true">
+    <origin xyz="-0.25 -0.36 1.25" rpy="0 0.7 1.5" />
+  </xacro:sensor_d435>
   
    <!-- <link name="vention_assembly">
       <inertial>

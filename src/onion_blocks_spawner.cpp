@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "onion_blocks_spawner");
     ros::NodeHandle nh; //("~");
     int i = 0 /*index the onions*/, j = 0 /*position reference for onions*/;
-    int onion_gen = 0, total_onions = 8;
+    int onion_gen = 0, total_onions = 4;
     double initial_pose_x, initial_pose_y, height_spawning, spawning_interval,
         conveyor_center_x, belt_width, wrench_duration, randpos, object_width;
     bool spawn_multiple;
@@ -91,10 +91,10 @@ int main(int argc, char **argv)
     spawn_model_srv_msg.request.initial_pose.position.x = initial_pose_x;  // 4.0
     spawn_model_srv_msg.request.initial_pose.position.y = initial_pose_y;  // 4.0
     spawn_model_srv_msg.request.initial_pose.position.z = height_spawning; // 0.2 ; on the conveyor belt
-    spawn_model_srv_msg.request.initial_pose.orientation.x = 0.0;
-    spawn_model_srv_msg.request.initial_pose.orientation.y = 0.0;
+    spawn_model_srv_msg.request.initial_pose.orientation.x = 0.7071067;    // Euler rotation of 90 deg about x axis
+    spawn_model_srv_msg.request.initial_pose.orientation.y = 0.0;          // converted to quaternion.
     spawn_model_srv_msg.request.initial_pose.orientation.z = 0.0;
-    spawn_model_srv_msg.request.initial_pose.orientation.w = 1.0;
+    spawn_model_srv_msg.request.initial_pose.orientation.w = 0.7071069;
     spawn_model_srv_msg.request.reference_frame = "world";
 
     //begin spawning onions
@@ -125,13 +125,13 @@ int main(int argc, char **argv)
             ++j;
             if (i % 2 == 0)
             {
-                spawn_model_srv_msg.request.initial_pose.position.x = initial_pose_x - j * 0.05; //width of sphere is 0.02, well within 0.05
-                spawn_model_srv_msg.request.initial_pose.position.y = initial_pose_y + j * 0.1; //width of sphere is 0.02, well within 0.05
+                spawn_model_srv_msg.request.initial_pose.position.x = initial_pose_x + j * 0.1; //width of sphere is 0.02, well within 0.05
+                spawn_model_srv_msg.request.initial_pose.position.y = initial_pose_y - j * 0.05; //width of sphere is 0.02, well within 0.05
             }
             else
             {
-                spawn_model_srv_msg.request.initial_pose.position.x = initial_pose_x - j * 0.05;
-                spawn_model_srv_msg.request.initial_pose.position.y = initial_pose_y - j * 0.1;
+                spawn_model_srv_msg.request.initial_pose.position.x = initial_pose_x - j * 0.1;
+                spawn_model_srv_msg.request.initial_pose.position.y = initial_pose_y - j * 0.05;
             }
             ROS_INFO_STREAM("x position of new onion: "
                             << spawn_model_srv_msg.request.initial_pose.position.x);
