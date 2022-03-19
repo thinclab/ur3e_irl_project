@@ -10,6 +10,8 @@
   <arg name="robot_description_file"  default="$(find ur3e_irl_project)/launch/ur3e_load.launch" />
   <!-- The text file path for SRDF -->
   <arg name="textfile" default="$(find ur3e_irl_project)/config/ur3e_combined.srdf" />
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
 
 <include file="$(find ur_robot_driver)/launch/ur3e_bringup.launch">
   <arg name="robot_ip" value="$(arg robot_ip)" />
@@ -36,6 +38,7 @@
   <arg name="load_robot_description" value="false"/>
   <arg name="pipeline" value="$(arg pipeline)"/>
   <arg name="textfile" value="$(arg textfile)" />
+  <arg name="debug" value="$(arg debug)"/>
 </include>
 
 </launch>

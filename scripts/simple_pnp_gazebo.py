@@ -24,17 +24,21 @@ def main():
         allow_replanning = True
         planning_time = 10
         pnp.goto_home()
+        pnp.target_location_x = 0
+        pnp.target_location_y = 0.4
+        pnp.target_location_z = 0.78
         current_pose = group.get_current_pose().pose
-        status = pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 0, 0.45, 0.95, allow_replanning, planning_time, thresh = 0.001)
+        # status = pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 0, 0.45, 0.95, allow_replanning, planning_time, thresh = 0.001)
         rospy.sleep(0.1)
+        pnp.staticDip(gripper_length=0.162)
         # print "\n",group.get_current_pose().pose.position
+        rospy.spin()
 
 
     except rospy.ROSInterruptException:
         return
     except KeyboardInterrupt:
         return
-    rospy.spin()
 
 
 if __name__ == '__main__':

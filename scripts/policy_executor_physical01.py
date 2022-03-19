@@ -193,14 +193,14 @@ def main():
     actList = {0:InspectAfterPicking, 1:PlaceOnConveyor, 2:PlaceInBin, 3:Pick, 4:ClaimNewOnion} 
     # print "\nI'm in main now!"
     ppv.rospy.init_node('policy_exec_phys', anonymous=True, disable_signals=False)
-    rgbtopic = '/kinect2/hd/image_color_rect'
-    depthtopic = '/kinect2/hd/image_depth_rect'
-    camerainfo = '/kinect2/hd/camera_info'
-    choice = 'real'
+    # rgbtopic = '/kinect2/hd/image_color_rect'
+    # depthtopic = '/kinect2/hd/image_depth_rect'
+    # camerainfo = '/kinect2/hd/camera_info'
+    # choice = 'real'
     # camera = ppv.Camera('kinectv2', rgbtopic, depthtopic, camerainfo, choice)
     # ppv.getCameraInstance(camera)
     # ppv.pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
-    outcome = actList[4]()    
+    outcome = actList[4]()
     while not ppv.rospy.is_shutdown() and outcome != 'SORT COMPLETE':
         print ('\n OUTCOME: ', outcome)
         # ppv.rospy.sleep(10)

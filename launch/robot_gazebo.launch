@@ -18,8 +18,12 @@
   <arg name="onion_bin" default="false"/>
   <arg name="conv_name" default="lab" />
   <arg name="sim" default="true" />
+  <!-- <arg name="limited" default="false" /> -->
+
   <!-- specify the planning pipeline -->
   <arg name="pipeline" default="ompl" />
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
 
   <!-- The text file path for SRDF -->
   <arg name="textfile" default="$(find ur3e_irl_project)/config/ur3e_combined.srdf" />
@@ -27,6 +31,7 @@
 
   <include file="$(find ur_gazebo)/launch/ur3e_bringup.launch">
     <arg name="robot_description_file" default="$(find ur3e_irl_project)/launch/ur3e_load.launch.xml" />
+    <!-- <arg name="limited" default="$(arg limited)" /> -->
   </include>
 
   <!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') == true)"> -->
@@ -49,10 +54,12 @@
   <!-- Remap follow_joint_trajectory -->
   <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>  
   <include file="$(find ur3e_moveit_config)/launch/demo.launch">
+    <!-- <arg name="limited" default="$(arg limited)" /> -->
     <arg name="pipeline" value="$(arg pipeline)"/>
     <arg name="load_robot_description" value="false"/>
     <arg name="fake_execution" default="false"/>
     <arg name="textfile" value="$(arg textfile)" />
+    <arg name="debug" value="$(arg debug)"/>
   </include>
   </group>
  

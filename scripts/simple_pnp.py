@@ -22,6 +22,8 @@ def main():
         planning_time = 10
         pnp.goto_home(0.3, goal_tol=0.01, orientation_tol=0.1)
         rospy.sleep(0.01)
+        print("EEF link: ", group.get_end_effector_link())
+        print("Planning base frame: ",group.get_planning_frame())
         # pnp.goto_placeOnConv()
         # pnp.goto_bin(usePoseGoal=False)
         # reset_gripper()
@@ -33,23 +35,28 @@ def main():
         # gripper_to_pos(60, 60, 200, False)    # OPEN GRIPPER
         # # gripper_to_pos(255, 255, 200, False)    # GRIPPER TO POSITION 255
         current_pose = group.get_current_pose().pose
-        # print("Current pose is: ")
-        # print("\n", current_pose)
-        # # # state = pnp.robot.get_current_state()
-        # # # group.set_start_state(state)
-        status = pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 0, 0.45, 0.95, allow_replanning, planning_time, thresh = 0.001)
-        # rospy.sleep(0.01)
+        print("Current pose is: ")
+        print("\n", current_pose)
+        pnp.goto_home()
+        pnp.target_location_x = 0.2
+        pnp.target_location_y = 0.45
+        pnp.target_location_z = 0.8
+        current_pose = group.get_current_pose().pose
+        # status = pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 0, 0.45, 0.95, allow_replanning, planning_time, thresh = 0.001)
+        rospy.sleep(0.1)
+        pnp.staticDip(gripper_length=0.16)
+        pnp.liftgripper
         # gr = gripper_to_pos(150, 60, 200, False)    # GRIPPER TO POSITION 150
         # rospy.sleep(0.05)
-        pnp.target_location_x = 10
-        lift = pnp.liftgripper()
+        # pnp.target_location_x = 10
+        # lift = pnp.liftgripper()
         # # pos = group.get_current_pose().pose.position
         # # pnp.goto_home(0.3, goal_tol=0.01, orientation_tol=0.1)
         # rospy.sleep(0.01)
         # view = pnp.view()     # We're rotating to show the camera behind UR
         # pnp.goto_bin()
         # pnp.placeOnConveyor()
-        print("After going to pose goal:\n",group.get_current_pose().pose.position)
+        # print("After going to pose goal:\n",group.get_current_pose().pose.position)
 
     except rospy.ROSInterruptException:
         return
@@ -59,6 +66,6 @@ def main():
 
 if __name__ == '__main__':
 	try:
-  		main()
+  	    main()
 	except rospy.ROSInterruptException:
 	    pass
