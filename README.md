@@ -132,7 +132,7 @@ The following are the steps to be followed to get this package working:
        
           roslaunch ur3e_irl_project robot_gazebo.launch conv_name:=lab 
           
-    8.) In order to run the policy executor for sorting, use thr following command:
+ 8.) In order to run the policy executor for sorting, use thr following command:
     
           rosrun ur3e_irl_project policy_executor_physical.py expert_policy.csv
 
