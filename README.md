@@ -107,7 +107,7 @@ The following are the steps to be followed to get this package working:
   
   5.) Now run:
   
-        roslaunch ur3e_irl_project robot.launch
+        roslaunch ur3e_irl_project robot.launch rviz_gui:=True
         
   6.) If the robot happens to go into protective stop during execution, use the following commands:
   
