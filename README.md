@@ -83,7 +83,7 @@ The following are the steps to be followed to get this package working:
 
    - cd into catkin_ws and install all dependencies for these packages: 
 
-          rosdep install --from-paths src --ignore-src --rosdistro=<YOUR ROS DISTRO> -y -i --verbose
+          rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y -i --verbose
 
    - If you see any uninstalled dependencies, you might have to manually install them using apt-get install or pip install.
    - If you still have errors, use 
