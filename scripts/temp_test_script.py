@@ -140,11 +140,13 @@ class PickAndPlace(object):
         pose_goal.position.x = px
         pose_goal.position.y = py
         pose_goal.position.z = pz
-        group.set_pose_target(pose_goal)
-        # group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
+        # group.set_pose_target(pose_goal)
+        group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
         group.allow_replanning(allow_replanning)
         group.set_planning_time(planning_time)
-        group.go(wait=True)
+        (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.01, 0.0, avoid_collisions=True)
+        group.execute(plan, wait=True)
+        # group.go(wait=True)
         group.stop()
         group.clear_pose_targets()
 
@@ -629,18 +631,18 @@ def main():
                                 random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
             rospy.sleep(0.1)
             current_pose = group.get_current_pose().pose
-            pnp.target_location_x = current_pose.position.x
-            pnp.target_location_y = current_pose.position.y
-            pnp.target_location_z = 0.8
-            pnp.staticDip(gripper_length=0.15)
-            print("Current pose: \n", group.get_current_pose().pose)
-            pnp.liftgripper()
-            rospy.sleep(0.1)
-            if random.random() < 0.45:
-                pnp.view()
-                pnp.goto_placeOnConv()
-                pnp.placeOnConveyor()
-            else: pnp.goto_bin()
+            # pnp.target_location_x = current_pose.position.x
+            # pnp.target_location_y = current_pose.position.y
+            # pnp.target_location_z = 0.8
+            # pnp.staticDip(gripper_length=0.15)
+            # print("Current pose: \n", group.get_current_pose().pose)
+            # pnp.liftgripper()
+            # rospy.sleep(0.1)
+            # if random.random() < 0.45:
+            #     pnp.view()
+            #     pnp.goto_placeOnConv()
+            #     pnp.placeOnConveyor()
+            # else: pnp.goto_bin()
     except rospy.ROSInterruptException:
         return
     except KeyboardInterrupt:

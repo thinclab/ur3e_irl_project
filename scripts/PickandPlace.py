@@ -257,7 +257,9 @@ class PickAndPlace(object):
         group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
         group.allow_replanning(allow_replanning)
         group.set_planning_time(planning_time)
-        group.go(wait=True)
+        (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.01, 0.0, avoid_collisions=True)
+        group.execute(plan, wait=True)
+        # group.go(wait=True)
         group.stop()
         group.clear_pose_targets()
 
