@@ -83,7 +83,7 @@ The following are the steps to be followed to get this package working:
 
    - cd into catkin_ws and install all dependencies for these packages: 
 
-          rosdep install --from-paths src --ignore-src --rosdistro=<YOUR ROS DISTRO> -y -i --verbose
+          rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y -i --verbose
 
    - If you see any uninstalled dependencies, you might have to manually install them using apt-get install or pip install.
    - If you still have errors, use 
@@ -107,7 +107,7 @@ The following are the steps to be followed to get this package working:
   
   5.) Now run:
   
-        roslaunch ur3e_irl_project robot.launch
+        roslaunch ur3e_irl_project robot.launch rviz_gui:=True
         
   6.) If the robot happens to go into protective stop during execution, use the following commands:
   
@@ -131,3 +131,8 @@ The following are the steps to be followed to get this package working:
        Example usage:          
        
           roslaunch ur3e_irl_project robot_gazebo.launch conv_name:=lab 
+          
+ 8.) In order to run the policy executor for sorting, use thr following command:
+    
+          rosrun ur3e_irl_project policy_executor_physical.py expert_policy.csv
+
