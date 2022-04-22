@@ -83,9 +83,10 @@ class Get_info(State):
 
     def execute(self, userdata):
         # rospy.loginfo('Executing state: Get_info')
-        pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+        # pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
         gripper_to_pos(50, 60, 200, False)    # GRIPPER TO POSITION 50
         if userdata.counter >= 500:
+            print('DEBUG: TIMEOUT')
             userdata.counter = 0
             return 'timed_out'
 
@@ -100,6 +101,7 @@ class Get_info(State):
                 # print("I'm updated")
                 # print '\nUser data x,y,z in Get_info are: \n', userdata.x,userdata.y,userdata.z
                 # rospy.sleep(5)
+                print('DEBUG: UPDATED')
                 return 'updated'
             else:
                 print ('\nSort Complete!\n')
@@ -108,6 +110,7 @@ class Get_info(State):
             userdata.counter += 1
             # print("I'm not updated")
             return 'not_updated'
+
 
 class Get_info_w_check(State):
     def __init__(self, frame_threshold=1, distance_threshold=0.02):
@@ -220,6 +223,7 @@ class Get_info_w_check(State):
         rospy.sleep(0.01)
         self.arxiv_refresh()
         return 'updated'
+
 
 class Claim(State):
     def __init__(self):
@@ -500,6 +504,7 @@ class Placeonconveyor(State):
             userdata.counter += 1
             return 'failed'
 
+
 class Placeinbin(State):
     def __init__(self):
         State.__init__(self, outcomes=['success', 'failed', 'timed_out'],
@@ -513,7 +518,7 @@ class Placeinbin(State):
             userdata.counter = 0
             return 'timed_out'
 
-        place = pnp.goto_bin()
+        place = pnp.goto_bin(usePoseGoal=False)
         rospy.sleep(0.01)
         if place:
             userdata.counter = 0

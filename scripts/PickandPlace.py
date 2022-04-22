@@ -41,10 +41,12 @@ class PickAndPlace(object):
         group = moveit_commander.MoveGroupCommander(group_name, wait_for_servers=5.0)
 
         # See ompl_planning.yaml for a complete list
-        group.set_planner_id("RRTConnect")
+        # group.set_planner_id("RRTConnect")
         # group.set_planner_id("BiEST")
         # group.set_planner_id("trajopt_interface/TrajOptPlanner")
         # group.set_planner_id("TRRT")
+        group.set_max_velocity_scaling_factor(0.5)
+        group.set_max_acceleration_scaling_factor(0.5)
 
         display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                        moveit_msgs.msg.DisplayTrajectory,
@@ -254,10 +256,12 @@ class PickAndPlace(object):
         pose_goal.position.y = py
         pose_goal.position.z = pz
         # group.set_pose_target(pose_goal)
-        group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
+        # group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
         group.allow_replanning(allow_replanning)
         group.set_planning_time(planning_time)
-        group.go(wait=True)
+        (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.01, 0.0, avoid_collisions=True)
+        group.execute(plan, wait=True)
+        # group.go(wait=True)
         group.stop()
         group.clear_pose_targets()
 
@@ -278,7 +282,7 @@ class PickAndPlace(object):
         ori = group.get_current_pose().pose.orientation
         status = self.go_to_pose_goal(ori.x,ori.y,ori.z,ori.w, self.target_location_x,
                                        self.target_location_y,
-                                        self.target_location_z+.225,      # - 0.045,1.2114413504613049
+                                        self.target_location_z+.3,      # - 0.045,1.2114413504613049
                                        allow_replanning, planning_time, threshold)
         rospy.sleep(0.05)
         return status
@@ -445,7 +449,8 @@ class PickAndPlace(object):
 
         print("Attempting to reach viewpoint\n")
         group = self.group
-        view_joint_angles = [-0.6432392597198486, -2.6825577221312464, -1.0882757345782679, -0.23568494737658696, -2.2726433912860315, -4.365030709897177]
+        # view_joint_angles = [-0.6432392597198486, -2.6825577221312464, -1.0882757345782679, -0.23568494737658696, -2.2726433912860315, -4.365030709897177]
+        view_joint_angles = [-0.6475113073932093, -1.9155713520445765, -1.4149178266525269, -3.124627252618307, 2.7653942108154297, 0.014964444562792778]
         joint_angles = {'elbow_joint': view_joint_angles[0],
                         'shoulder_lift_joint': view_joint_angles[1],
                         'shoulder_pan_joint': view_joint_angles[2],
@@ -595,3 +600,4 @@ class PickAndPlace(object):
         return onConveyor
 
 ############################################## END OF CLASS ##################################################
+

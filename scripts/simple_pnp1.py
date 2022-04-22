@@ -10,7 +10,7 @@ import sys
 from gripper_to_position import reset_gripper, activate_gripper, gripper_to_pos
 import numpy as np
 
-pnp = PickAndPlace()
+pnp = PickAndPlace(init_node=False)
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         group = pnp.group
         allow_replanning = True
         planning_time = 10
-        pnp.goto_home(0.3, goal_tol=0.01, orientation_tol=0.1)
+        pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
         rospy.sleep(0.01)
         print("EEF link: ", group.get_end_effector_link())
         print("Planning base frame: ",group.get_planning_frame())
