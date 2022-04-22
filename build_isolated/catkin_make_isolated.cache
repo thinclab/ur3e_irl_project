@@ -1,2 +1,0 @@
-
--G Unix Makefiles -DCATKIN_DEVEL_PREFIX=/home/yikang/catkin_ws/src/ur3e_irl_project/devel_isolated -DCMAKE_INSTALL_PREFIX=/home/yikang/catkin_ws/src/ur3e_irl_project/install_isolated
