@@ -7,7 +7,7 @@ import numpy as np
 import moveit_msgs.msg
 from geometry_msgs.msg import PoseStamped
 from rospy.client import init_node
-from std_msgs.msg import String, Int8MultiArray
+from std_msgs.msg import String, Int8MultiArray, Empty
 from operator import mod
 import random
 import sys
@@ -68,7 +68,7 @@ class Get_info(State):
         # print "\nIs updated: ",camera.is_updated,"\tFound objects: ", camera.found_objects
         # if camera.is_updated and camera.found_objects:    
         #     camera.OblobsPublisher()
-        self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
+        # self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
 
     def callback_vision(self, msg):
         # print '\nCallback vision\n'
@@ -79,14 +79,16 @@ class Get_info(State):
         # print '\nCallback data x,y,z in Get_info are: \n', self.x,self.y,self.z
         # rospy.sleep(5)
         self.is_updated = True
+        # print('DEBUG LINE 82: callback_vision activated')
         return
 
     def execute(self, userdata):
         # rospy.loginfo('Executing state: Get_info')
         # pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
         gripper_to_pos(50, 60, 200, False)    # GRIPPER TO POSITION 50
+        self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
         if userdata.counter >= 500:
-            print('DEBUG: TIMEOUT')
+            # print('DEBUG: TIMEOUT')
             userdata.counter = 0
             return 'timed_out'
 
@@ -101,11 +103,12 @@ class Get_info(State):
                 # print("I'm updated")
                 # print '\nUser data x,y,z in Get_info are: \n', userdata.x,userdata.y,userdata.z
                 # rospy.sleep(5)
-                print('DEBUG: UPDATED')
+                # print('DEBUG: UPDATED')
                 return 'updated'
             else:
-                print ('\nSort Complete!\n')
-                return 'completed'
+                # print ('\nSort Complete!\n')
+                # return 'completed'
+                return 'updated'
         else:
             userdata.counter += 1
             # print("I'm not updated")
@@ -227,10 +230,13 @@ class Get_info_w_check(State):
 
 class Claim(State):
     def __init__(self):
-        State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'not_found', 'completed'],
+        State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'not_found', 'completed', 'move'],
                        input_keys=['x', 'y', 'z', 'color', 'counter'],
                        output_keys=['x', 'y', 'z', 'color', 'counter'])
         self.is_updated = False
+        self.conv_pub = rospy.Publisher('/toggle_led', Empty, queue_size = 1)
+        self.empty_conv = 0
+        self.empty_conv_threshold = 2
         # print("I came to claim")
 
     def execute(self, userdata):
@@ -240,49 +246,93 @@ class Claim(State):
             userdata.counter = 0
             return 'timed_out'
 
-        if len(userdata.color) == 0:
-            return 'not_found'
-        max_index = len(userdata.color)
-        print ('\nMax index is = ', max_index)
-        pnp.onion_index = 0
-        for i in range(max_index):
-            if len(userdata.x) >= i:    # Sometimes we get color but no location, so double-checking.
-                try:
-                    if userdata.x[i] > -0.25 and userdata.x[i] < 0.25:  # Numbers estd using current conv.
-                        pnp.target_location_x = userdata.x[i]
-                        pnp.target_location_y = userdata.y[i]
-                        pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
-                        pnp.onion_color = userdata.color[i]
-                        pnp.onion_index = i
-                        self.is_updated = True
-                        break
-                    else:
-                        done_onions += 1
-                        print ('\nDone onions = ', done_onions)
-                        self.is_updated = False
-                except IndexError:
-                    pass
-            else:
-                print ('\nSort complete!')
-                return 'completed'
-
-        if max_index == done_onions:
-            print ('\nAll onions are sorted!')
+        if self.empty_conv == self.empty_conv_threshold:
             return 'completed'
-        else:
-            done_onions = 0
 
+        if len(userdata.color) == 0:
+            pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+            msg = Empty()
+            rospy.sleep(0.1)
+            self.conv_pub.publish(msg)
+            rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
+            self.conv_pub.publish(msg)
+            rospy.sleep(0.5)
+            userdata.x = []
+            userdata.y = []
+            userdata.z = []
+            userdata.color = []
+            userdata.counter = 0
+            max_index = 0
+            done_onions = 0
+            self.empty_conv += 1
+            # print('not found move')
+            return 'move'
+
+        max_index = len(userdata.color)
+        # print('DEBUG LINE 249', userdata.x)
+        # print ('\nMax index is = ', max_index)
+        # pnp.onion_index = 0
+        for i in range(max_index):
+            # if len(userdata.x) >= i:    # Sometimes we get color but no location, so double-checking.
+            try:
+                if userdata.x[i] > -0.25 and userdata.x[i] < 0.2:  # Numbers estd using current conv.
+                    pnp.target_location_x = userdata.x[i]
+                    pnp.target_location_y = userdata.y[i]
+                    pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
+                    pnp.onion_color = userdata.color[i]
+                    # pnp.onion_index = i
+                    self.is_updated = True
+                    break
+                else:
+                    done_onions += 1
+                    # print ('\nonions not in region : ', done_onions)
+                    self.is_updated = False
+            except IndexError:
+                pass
+            # else:
+            #     print ('\nSort complete!')
+            #     return 'completed'
+        
         if self.is_updated == False:
-            userdata.counter += 1
-            return 'not_updated'
+            # print ('\nAll onions are sorted!')
+            # return 'completed'
+            pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+            msg = Empty()
+            rospy.sleep(0.1)
+            self.conv_pub.publish(msg)
+            rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
+            self.conv_pub.publish(msg)
+            rospy.sleep(0.5)
+            userdata.x = []
+            userdata.y = []
+            userdata.z = []
+            userdata.color = []
+            userdata.counter = 0
+            max_index = 0
+            done_onions = 0
+            # print('DEBUG LINE 288: move activated')
+            self.empty_conv += 1
+            return 'move'
         else:
-            # print('\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z)
-            # reset_gripper()
-            # activate_gripper()
+            self.empty_conv = 0
+            done_onions = 0
             userdata.counter = 0
             current_state = vals2sid(ol=0, eefl=3, pred=2, listst=2)
             rospy.sleep(0.01)
             return 'updated'
+
+        # if self.is_updated == False:
+        #     userdata.counter += 1
+        #     print('DEBUG LINE 294: Claim not updated')
+        #     return 'not_updated'
+        # else:
+        #     # print('\n(x,y,z) after claim: ',pnp.target_location_x,pnp.target_location_y,pnp.target_location_z)
+        #     # reset_gripper()
+        #     # activate_gripper()
+        #     userdata.counter = 0
+        #     current_state = vals2sid(ol=0, eefl=3, pred=2, listst=2)
+        #     rospy.sleep(0.01)
+        #     return 'updated'
 
 
 class Approach(State):
@@ -410,6 +460,7 @@ class View(State):
         # rospy.loginfo('Executing state: View')
         if userdata.counter >= 2:
             userdata.counter = 0
+            pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
             return 'timed_out'
         
         if pnp.onion_color == 1:    # Inspect further only if it is an unblemished one

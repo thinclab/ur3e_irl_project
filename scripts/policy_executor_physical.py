@@ -26,6 +26,7 @@ def ClaimNewOnion():
                                         'not_updated':'CLAIM',
                                         'timed_out': 'TIMED_OUT',
                                         'not_found': 'GETINFO',
+                                        'move': 'GETINFO',
                                         'completed': 'SORT COMPLETE'},
                             remapping={'x':'sm_x', 'y': 'sm_y', 'z': 'sm_z',
                                 'color':'sm_color','counter':'sm_counter'})
