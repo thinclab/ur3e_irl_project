@@ -41,7 +41,7 @@ class PickAndPlace(object):
         group = moveit_commander.MoveGroupCommander(group_name, wait_for_servers=5.0)
 
         # See ompl_planning.yaml for a complete list
-        # group.set_planner_id("RRTConnect")
+        group.set_planner_id("RRTConnect")
         # group.set_planner_id("BiEST")
         # group.set_planner_id("trajopt_interface/TrajOptPlanner")
         # group.set_planner_id("TRRT")
@@ -75,11 +75,11 @@ class PickAndPlace(object):
         self.target_location_x = -100
         self.target_location_y = -100
         self.target_location_z = -100
+        self.onion_color = None
+        # self.onion_index = 0
         # Save some commenly used variables in the setup class
         self.ref_link = self.group.get_pose_reference_frame()
         # self.group_names = group_names
-        # self.onion_index = 0
-        # self.onion_color = None
         # self.num_onions = 0
         # self.bad_onions = []
         # self.onionLoc = None
@@ -256,12 +256,12 @@ class PickAndPlace(object):
         pose_goal.position.y = py
         pose_goal.position.z = pz
         # group.set_pose_target(pose_goal)
-        # group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
+        group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
         group.allow_replanning(allow_replanning)
         group.set_planning_time(planning_time)
-        (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.001, 0.0, avoid_collisions=True)
-        group.execute(plan, wait=True)
-        # group.go(wait=True)
+        # (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.001, 0.0, avoid_collisions=True)
+        # group.execute(plan, wait=True)
+        group.go(wait=True)
         group.stop()
         group.clear_pose_targets()
 
@@ -295,29 +295,29 @@ class PickAndPlace(object):
         # pcm = self.create_simple_box_constraints()
         # pcm = self.create_line_constraints()
         
-        position_constraint = PositionConstraint()
-        position_constraint.target_point_offset.x = 0.1
-        position_constraint.target_point_offset.y = 0.1
-        position_constraint.target_point_offset.z = 0.1
-        position_constraint.weight = 1.0
-        position_constraint.link_name = group.get_end_effector_link()
-        position_constraint.header.frame_id = group.get_planning_frame()
+        # position_constraint = PositionConstraint()
+        # position_constraint.target_point_offset.x = 0.1
+        # position_constraint.target_point_offset.y = 0.1
+        # position_constraint.target_point_offset.z = 0.1
+        # position_constraint.weight = 1.0
+        # position_constraint.link_name = group.get_end_effector_link()
+        # position_constraint.header.frame_id = group.get_planning_frame()
         
-        orientation_constraint = OrientationConstraint()
-        orientation_constraint.orientation = current_pose.pose.orientation
-        orientation_constraint.absolute_x_axis_tolerance = 0.1
-        orientation_constraint.absolute_y_axis_tolerance = 0.1
-        orientation_constraint.absolute_z_axis_tolerance = 0.1
-        orientation_constraint.weight = 1.0
-        orientation_constraint.link_name = group.get_end_effector_link()
-        orientation_constraint.header.frame_id = group.get_pose_reference_frame()
+        # orientation_constraint = OrientationConstraint()
+        # orientation_constraint.orientation = current_pose.pose.orientation
+        # orientation_constraint.absolute_x_axis_tolerance = 0.1
+        # orientation_constraint.absolute_y_axis_tolerance = 0.1
+        # orientation_constraint.absolute_z_axis_tolerance = 0.1
+        # orientation_constraint.weight = 1.0
+        # orientation_constraint.link_name = group.get_end_effector_link()
+        # orientation_constraint.header.frame_id = group.get_pose_reference_frame()
 
-        constraint = Constraints()
-        constraint.orientation_constraints.append(orientation_constraint)
-        # constraint.position_constraints.append(pcm)
-        constraint.position_constraints.append(position_constraint)
-        constraint.name = "use_equality_constraints"
-        group.set_path_constraints(constraint)
+        # constraint = Constraints()
+        # constraint.orientation_constraints.append(orientation_constraint)
+        # # constraint.position_constraints.append(pcm)
+        # constraint.position_constraints.append(position_constraint)
+        # constraint.name = "use_equality_constraints"
+        # group.set_path_constraints(constraint)
         allow_replanning = True
         planning_time = 10
         dip = False
@@ -332,8 +332,8 @@ class PickAndPlace(object):
             rospy.sleep(0.01)
             print("Dip value: ", dip)
         current_pose = group.get_current_pose()
-        self.remove_all_markers()
-        group.clear_path_constraints()
+        # self.remove_all_markers()
+        # group.clear_path_constraints()
         # after_dip = current_pose.pose.position.z
         # print("After dip z: ", after_dip)
         # if dip and (before_dip > after_dip):                
@@ -351,29 +351,29 @@ class PickAndPlace(object):
         # pcm = self.create_simple_box_constraints()
         # pcm = self.create_line_constraints()
         
-        position_constraint = PositionConstraint()
-        position_constraint.target_point_offset.x = 0.1
-        position_constraint.target_point_offset.y = 0.1
-        position_constraint.target_point_offset.z = 0.1
-        position_constraint.weight = 1.0
-        position_constraint.link_name = group.get_end_effector_link()
-        position_constraint.header.frame_id = group.get_planning_frame()
+        # position_constraint = PositionConstraint()
+        # position_constraint.target_point_offset.x = 0.1
+        # position_constraint.target_point_offset.y = 0.1
+        # position_constraint.target_point_offset.z = 0.1
+        # position_constraint.weight = 1.0
+        # position_constraint.link_name = group.get_end_effector_link()
+        # position_constraint.header.frame_id = group.get_planning_frame()
                 
-        orientation_constraint = OrientationConstraint()
-        orientation_constraint.orientation = current_pose.pose.orientation
-        orientation_constraint.absolute_x_axis_tolerance = 0.1
-        orientation_constraint.absolute_y_axis_tolerance = 0.1
-        orientation_constraint.absolute_z_axis_tolerance = 0.1
-        orientation_constraint.weight = 1.0
-        orientation_constraint.link_name = group.get_end_effector_link()
-        orientation_constraint.header.frame_id = group.get_pose_reference_frame()
+        # orientation_constraint = OrientationConstraint()
+        # orientation_constraint.orientation = current_pose.pose.orientation
+        # orientation_constraint.absolute_x_axis_tolerance = 0.1
+        # orientation_constraint.absolute_y_axis_tolerance = 0.1
+        # orientation_constraint.absolute_z_axis_tolerance = 0.1
+        # orientation_constraint.weight = 1.0
+        # orientation_constraint.link_name = group.get_end_effector_link()
+        # orientation_constraint.header.frame_id = group.get_pose_reference_frame()
 
-        constraint = Constraints()
-        constraint.orientation_constraints.append(orientation_constraint)
-        # constraint.position_constraints.append(pcm)
-        constraint.position_constraints.append(position_constraint)
-        constraint.name = "use_equality_constraints"
-        group.set_path_constraints(constraint)
+        # constraint = Constraints()
+        # constraint.orientation_constraints.append(orientation_constraint)
+        # # constraint.position_constraints.append(pcm)
+        # constraint.position_constraints.append(position_constraint)
+        # constraint.name = "use_equality_constraints"
+        # group.set_path_constraints(constraint)
         allow_replanning = False
         planning_time = 10
         lifted = False
@@ -389,8 +389,8 @@ class PickAndPlace(object):
 
         current_pose = group.get_current_pose()
         # print("Current z pose: ", current_pose.position.z)
-        self.remove_all_markers()
-        group.clear_path_constraints()
+        # self.remove_all_markers()
+        # group.clear_path_constraints()
         print("Successfully lifted gripper to z: ", current_pose.pose.position.z)
 
         return True

@@ -346,7 +346,7 @@ class PickAndPlace(object):
         # constraint.position_constraints.append(pcm)
         constraint.position_constraints.append(position_constraint)
         constraint.name = "use_equality_constraints"
-        group.set_path_constraints(constraint)
+        # group.set_path_constraints(constraint)
         allow_replanning = True
         planning_time = 10
         dip = False
@@ -361,8 +361,8 @@ class PickAndPlace(object):
             rospy.sleep(0.01)
             print("Dip value: ", dip)
         current_pose = group.get_current_pose()
-        self.remove_all_markers()
-        group.clear_path_constraints()
+        # self.remove_all_markers()
+        # group.clear_path_constraints()
         # after_dip = current_pose.pose.position.z
         # print("After dip z: ", after_dip)
         # if dip and (before_dip > after_dip):                
@@ -402,7 +402,7 @@ class PickAndPlace(object):
         # constraint.position_constraints.append(pcm)
         constraint.position_constraints.append(position_constraint)
         constraint.name = "use_equality_constraints"
-        group.set_path_constraints(constraint)
+        # group.set_path_constraints(constraint)
         allow_replanning = False
         planning_time = 10
         lifted = False
@@ -418,8 +418,8 @@ class PickAndPlace(object):
 
         current_pose = group.get_current_pose()
         # print("Current z pose: ", current_pose.position.z)
-        self.remove_all_markers()
-        group.clear_path_constraints()
+        # self.remove_all_markers()
+        # group.clear_path_constraints()
         print("Successfully lifted gripper to z: ", current_pose.pose.position.z)
 
         return True
@@ -625,20 +625,22 @@ def main():
         # pnp.remove_all_markers()
 
         import random
-        for _ in range(1):
+        for _ in range(10):
             pnp.goto_home()
-            pnp.view()
+            # pnp.view()
             current_pose = group.get_current_pose().pose
+            pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 
+                                random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
             # pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 
-            #                     random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
+            #             0, 0.45, 1.2, allow_replanning, planning_time, thresh = 0.1)
             rospy.sleep(0.1)
             current_pose = group.get_current_pose().pose
-            # pnp.target_location_x = current_pose.position.x
-            # pnp.target_location_y = current_pose.position.y
-            # pnp.target_location_z = 0.8
-            # pnp.staticDip(gripper_length=0.15)
-            # print("Current pose: \n", group.get_current_pose().pose)
-            # pnp.liftgripper()
+            pnp.target_location_x = current_pose.position.x
+            pnp.target_location_y = current_pose.position.y
+            pnp.target_location_z = 0.8
+            pnp.staticDip(gripper_length=0.15)
+            print("Current pose: \n", group.get_current_pose().pose)
+            pnp.liftgripper()
             # rospy.sleep(0.1)
             # if random.random() < 0.45:
             #     pnp.view()

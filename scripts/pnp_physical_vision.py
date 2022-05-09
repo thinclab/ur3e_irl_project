@@ -15,22 +15,15 @@ from os import system
 import rospy
 from time import sleep
 from ur3e_irl_project.msg import OBlobs
-from sanet_onionsorting.srv import yolo_srv
 from smach import *
 from smach_ros import *
 from smach_msgs.msg import *
-import rospkg
 from collections import Counter
-
-rospack = rospkg.RosPack()  # get an instance of RosPack with the default search paths
-# get the file path for sanet_onionsorting
-path = rospack.get_path('sanet_onionsorting')
-sys.path.append(path + '/scripts/')
-
-# from rgbd_imgpoint_to_tf import Camera
+from get_camera_detections import camera_node
 
 # Global initializations
 pnp = PickAndPlace(init_node=False)
+
 current_state = 140
 done_onions = 0
 
@@ -52,7 +45,6 @@ def vals2sid(ol, eefl, pred, listst, nOnionLoc=4, nEEFLoc=4, nPredict=3, nlistID
 
 class Get_info(State):
     def __init__(self):
-        # global camera
         State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'completed'],
                        input_keys=['x', 'y', 'z', 'color', 'counter'],
                        output_keys=['x', 'y', 'z', 'color', 'counter'])
@@ -61,14 +53,8 @@ class Get_info(State):
         self.z = []
         self.color = []
         self.is_updated = False
-        # rospy.wait_for_service("/get_predictions")  # Contains the centroids of the obj bounding boxes
-        # gip_service = rospy.ServiceProxy("/get_predictions", yolo_srv)
-        # response = gip_service()
-        # camera.save_response(response)
-        # print "\nIs updated: ",camera.is_updated,"\tFound objects: ", camera.found_objects
-        # if camera.is_updated and camera.found_objects:    
-        #     camera.OblobsPublisher()
-        # self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
+        # camera_node()
+        self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
 
     def callback_vision(self, msg):
         # print '\nCallback vision\n'
@@ -79,7 +65,6 @@ class Get_info(State):
         # print '\nCallback data x,y,z in Get_info are: \n', self.x,self.y,self.z
         # rospy.sleep(5)
         self.is_updated = True
-        # print('DEBUG LINE 82: callback_vision activated')
         return
 
     def execute(self, userdata):
@@ -103,7 +88,6 @@ class Get_info(State):
                 # print("I'm updated")
                 # print '\nUser data x,y,z in Get_info are: \n', userdata.x,userdata.y,userdata.z
                 # rospy.sleep(5)
-                # print('DEBUG: UPDATED')
                 return 'updated'
             else:
                 # print ('\nSort Complete!\n')
@@ -116,7 +100,7 @@ class Get_info(State):
 
 
 class Get_info_w_check(State):
-    def __init__(self, frame_threshold=1, distance_threshold=0.02):
+    def __init__(self, frame_threshold=1, distance_threshold=0.05):
         global pnp
         State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'completed'],
                        input_keys=['x', 'y', 'z', 'color', 'counter'],
@@ -144,8 +128,7 @@ class Get_info_w_check(State):
         for _ in range(self.frame_threshold):
             msg = rospy.wait_for_message(topic, topic_type)
             rospy.loginfo('Checking!')
-
-            rospy.sleep(0.1)
+            rospy.sleep(0.05)
             self.is_updated = True
             msg_len = len(msg.x)
             for i in range(msg_len):
@@ -153,7 +136,6 @@ class Get_info_w_check(State):
                 y = msg.y[i]
                 z = msg.z[i]
                 color = msg.color[i]
-
                 self.check_msg(x, y, z, color)
         rospy.loginfo('End check!')
 
@@ -164,7 +146,7 @@ class Get_info_w_check(State):
                 self.y_arxiv[i].append(y)
                 self.z_arxiv[i].append(z)
                 self.color_arxiv[i].append(color)
-                return i 
+                return i
         if x != -100 and y != -100 and z != -100:
             self.x_arxiv.append([x])
             self.y_arxiv.append([y])
@@ -252,11 +234,11 @@ class Claim(State):
         if len(userdata.color) == 0:
             pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
             msg = Empty()
-            rospy.sleep(0.1)
+            # rospy.sleep(0.1)
             self.conv_pub.publish(msg)
             rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
             self.conv_pub.publish(msg)
-            rospy.sleep(0.5)
+            # rospy.sleep(0.5)
             userdata.x = []
             userdata.y = []
             userdata.z = []
@@ -269,7 +251,6 @@ class Claim(State):
             return 'move'
 
         max_index = len(userdata.color)
-        # print('DEBUG LINE 249', userdata.x)
         # print ('\nMax index is = ', max_index)
         # pnp.onion_index = 0
         for i in range(max_index):
@@ -298,11 +279,11 @@ class Claim(State):
             # return 'completed'
             pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
             msg = Empty()
-            rospy.sleep(0.1)
+            # rospy.sleep(0.1)
             self.conv_pub.publish(msg)
             rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
             self.conv_pub.publish(msg)
-            rospy.sleep(0.5)
+            # rospy.sleep(0.1)
             userdata.x = []
             userdata.y = []
             userdata.z = []
@@ -310,7 +291,6 @@ class Claim(State):
             userdata.counter = 0
             max_index = 0
             done_onions = 0
-            # print('DEBUG LINE 288: move activated')
             self.empty_conv += 1
             return 'move'
         else:
@@ -356,7 +336,60 @@ class Approach(State):
         else:
             userdata.counter += 1
             return 'failed'
-        
+
+
+class CheckNPick(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'failed', 'timed_out'],
+                       input_keys=['x', 'y', 'z', 'color', 'counter'],
+                       output_keys=['x', 'y', 'z', 'color', 'counter'])
+        self.x = []
+        self.y = []
+        self.z = []
+        self.color = []
+        self.is_updated = False
+        self.callback_check(rospy.wait_for_message("/object_location", OBlobs))
+        rospy.sleep(0.1)
+
+    def callback_check(self, msg):
+        self.x = msg.x
+        self.y = msg.y
+        self.z = msg.z
+        self.color = msg.color
+        self.is_updated = True
+        return
+
+    def execute(self, userdata):
+        global pnp
+        if len(userdata.color) == 0:
+            userdata.x = self.x
+            userdata.y = self.y
+            userdata.z = self.z
+            userdata.color = self.color
+            userdata.counter = 0
+            max_index = 0
+            done_onions = 0
+
+        max_index = len(userdata.color)
+        for i in range(max_index):
+            try:
+                if userdata.x[i] > -0.25 and userdata.x[i] < 0.2:  # Numbers estd using current conv.
+                    if abs(userdata.x[i] - pnp.target_location_x) > 0.5:
+                        print("Updating new coordinates in CheckNPick!\n")
+                    pnp.target_location_x = userdata.x[i]
+                    pnp.target_location_y = userdata.y[i]
+                    pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
+                    pnp.onion_color = userdata.color[i]
+                    self.is_updated = True
+                    break
+                else:
+                    done_onions += 1
+                    self.is_updated = False
+            except IndexError:
+                pass
+        if self.is_updated and done_onions <= max_index:
+            return 'success'
+
 
 class Dipdown(State):
     def __init__(self):
