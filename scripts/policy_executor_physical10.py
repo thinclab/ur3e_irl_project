@@ -3,7 +3,11 @@ from time import time
 import pnp_physical_vision as ppv
 import rospkg
 
+# Global variables
+multi_frame = False
+
 def ClaimNewOnion():
+    global multi_frame
     # Create a SMACH state machine
     ClaimNewOnion = ppv.StateMachine(outcomes=['TIMED_OUT', 'SUCCEEDED', 'SORT COMPLETE'])
     ClaimNewOnion.userdata.sm_x = []
@@ -15,22 +19,31 @@ def ClaimNewOnion():
         # Open the container
         with ClaimNewOnion:
             # Add states to the container
-            ppv.StateMachine.add('GETINFO', ppv.Get_info(), 
+            if multi_frame:
+                ppv.StateMachine.add('GETINFO', ppv.Get_info_w_check(frame_threshold=3), 
                             transitions={'updated':'CLAIM', 
                                         'not_updated':'GETINFO',
                                         'timed_out': 'TIMED_OUT',
                                         'completed': 'SORT COMPLETE'},
                             remapping={'x':'sm_x', 'y': 'sm_y', 'z': 'sm_z',
                                 'color':'sm_color','counter':'sm_counter'})
+            else:
+                ppv.StateMachine.add('GETINFO', ppv.Get_info(), 
+                                transitions={'updated':'CLAIM', 
+                                            'not_updated':'GETINFO',
+                                            'timed_out': 'TIMED_OUT',
+                                            'completed': 'SORT COMPLETE'},
+                                remapping={'x':'sm_x', 'y': 'sm_y', 'z': 'sm_z',
+                                    'color':'sm_color','counter':'sm_counter'})
             ppv.StateMachine.add('CLAIM', ppv.Claim(), 
-                            transitions={'updated':'SUCCEEDED', 
-                                        'not_updated':'CLAIM',
-                                        'timed_out': 'TIMED_OUT',
-                                        'not_found': 'GETINFO',
-                                        'move': 'GETINFO',
-                                        'completed': 'SORT COMPLETE'},
-                            remapping={'x':'sm_x', 'y': 'sm_y', 'z': 'sm_z',
-                                'color':'sm_color','counter':'sm_counter'})
+                        transitions={'updated':'SUCCEEDED', 
+                                    'not_updated':'CLAIM',
+                                    'timed_out': 'TIMED_OUT',
+                                    'not_found': 'GETINFO',
+                                    'move': 'GETINFO',
+                                    'completed': 'SORT COMPLETE'},
+                        remapping={'x':'sm_x', 'y': 'sm_y', 'z': 'sm_z',
+                            'color':'sm_color','counter':'sm_counter'})
         # Execute SMACH plan
         outcome_claim = ClaimNewOnion.execute()
         # print '\nClaim outcome is: ', outcome_claim
@@ -192,16 +205,31 @@ def PlaceOnConveyor():
 
 def main():
     t0 = time()
+    global multi_frame
     rospack = rospkg.RosPack()  # get an instance of RosPack with the default search paths
     path = rospack.get_path('ur3e_irl_project')   # get the file path for ur3e_irl_project
-    if len(ppv.sys.argv) < 2:
-            print ("Default policy - expert chosen")
-            policyfile = "expert_policy.csv"
-    else:
-        policyfile = ppv.sys.argv[1]
-        print ("\n{} chosen".format(policyfile))
+
+    import argparse
+
+    desc = "A ROS Node to load a policy file and run a state machine based on policy actions. Use --help for usage instructions."
+    # create parser
+    parser = argparse.ArgumentParser(description = desc)
+
+    # add arguments to the parser
+    parser.add_argument('--policyfile', dest='policyfile', default='expert_policy.csv',
+                help='Specify name of policy file (with extension) to load')
+    parser.add_argument('--use_var_height', dest='var_height', action='store_true',
+                help='Setting this True allows the usage of variable height values coming from the camera transforms') 
+    parser.add_argument('--use_multiple_frames', dest='multi_frame', action='store_true',
+                help='Setting this True allows the usage of multiple frames to average out the camera detections') 
+
+    # parse the arguments
+    args = parser.parse_args()
+    print ("\n{} chosen with variable height: {} and multi_frame: {}".format(args.policyfile, args.var_height, args.multi_frame))
+    multi_frame = args.multi_frame
+
     
-    policy = ppv.np.genfromtxt(path+'/scripts/'+ policyfile, delimiter=' ')
+    policy = ppv.np.genfromtxt(path+'/scripts/'+ args.policyfile, delimiter=' ')
     actList = {0:InspectAfterPicking, 1:PlaceOnConveyor, 2:PlaceInBin, 3:Pick, 4:ClaimNewOnion} 
 
     actMeaning = {0:'InspectAfterPicking', 1:'PlaceOnConveyor', 2:'PlaceInBin', 3:'Pick', 4:'ClaimNewOnion'} 
@@ -237,6 +265,7 @@ def main():
     print("Time for init: ",t1-t0)
     ppv.rospy.init_node('policy_exec_phys', anonymous=True, disable_signals=False)
     ppv.pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+    ppv.var_height = args.var_height
     outcome = actList[4]()
     t2 = time()
     print("Time before while loop: ", t2-t1)
