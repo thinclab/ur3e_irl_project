@@ -45,8 +45,8 @@ class PickAndPlace(object):
         # group.set_planner_id("BiEST")
         # group.set_planner_id("trajopt_interface/TrajOptPlanner")
         # group.set_planner_id("TRRT")
-        group.set_max_velocity_scaling_factor(0.75)
-        group.set_max_acceleration_scaling_factor(0.75)
+        group.set_max_velocity_scaling_factor(1)
+        group.set_max_acceleration_scaling_factor(1)
 
         display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                        moveit_msgs.msg.DisplayTrajectory,
@@ -326,6 +326,8 @@ class PickAndPlace(object):
         before_dip = current_pose.pose.position.z
         print("Gripper length given: ", gripper_length)
         print("Attempting to dip to (x,y,z): ", self.target_location_x, self.target_location_y, self.target_location_z + gripper_length,)
+        group.set_max_velocity_scaling_factor(0.25)
+        group.set_max_acceleration_scaling_factor(0.25)
         while not dip:
             dip = self.go_to_pose_goal(current_pose.pose.orientation.x, current_pose.pose.orientation.y, current_pose.pose.orientation.z, current_pose.pose.orientation.w, self.target_location_x,  # accounting for tolerance error
                                     self.target_location_y,  
@@ -342,6 +344,8 @@ class PickAndPlace(object):
         #     return True
         # else:
         #     self.staticDip()
+        group.set_max_velocity_scaling_factor(1)
+        group.set_max_acceleration_scaling_factor(1)
         return True
 
 

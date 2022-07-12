@@ -26,6 +26,7 @@ pnp = PickAndPlace(init_node=False)
 
 current_state = 140
 done_onions = 0
+var_height = False
 
 def sid2vals(s, nOnionLoc=4, nEEFLoc=4, nPredict=3, nlistIDStatus=3):
     sid = s
@@ -177,14 +178,15 @@ class Get_info_w_check(State):
 
         arxiv_len = len(self.x_arxiv)
         if arxiv_len == 0:
-            print('\nSort Complete!\n')
+            # print('\nSort Complete!\n')
             self.is_updated = False
             userdata.x = []
             userdata.y = []
             userdata.z = []
             userdata.color = []
             userdata.counter = 0
-            return 'completed'
+            # return 'completed'
+            return 'updated'
 
         x_output = []
         y_output = []
@@ -222,7 +224,7 @@ class Claim(State):
         # print("I came to claim")
 
     def execute(self, userdata):
-        global pnp, done_onions, current_state
+        global pnp, done_onions, current_state, var_height
         # rospy.loginfo('Executing state: Claim')
         if userdata.counter >= 50:
             userdata.counter = 0
@@ -259,7 +261,11 @@ class Claim(State):
                 if userdata.x[i] > -0.25 and userdata.x[i] < 0.2:  # Numbers estd using current conv.
                     pnp.target_location_x = userdata.x[i]
                     pnp.target_location_y = userdata.y[i]
-                    pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
+                    if var_height:
+                        pnp.target_location_z = userdata.z[i]
+                        print("Using variable height: ", pnp.target_location_z)
+                    else:
+                        pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
                     # pnp.onion_index = i
                     self.is_updated = True
@@ -360,7 +366,7 @@ class CheckNPick(State):
         return
 
     def execute(self, userdata):
-        global pnp
+        global pnp, var_height
         if len(userdata.color) == 0:
             userdata.x = self.x
             userdata.y = self.y
@@ -378,7 +384,11 @@ class CheckNPick(State):
                         print("Updating new coordinates in CheckNPick!\n")
                     pnp.target_location_x = userdata.x[i]
                     pnp.target_location_y = userdata.y[i]
-                    pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
+                    if var_height:
+                        pnp.target_location_z = userdata.z[i]
+                        print("Using variable height: ", pnp.target_location_z)
+                    else:
+                        pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
                     self.is_updated = True
                     break
@@ -404,7 +414,7 @@ class Dipdown(State):
             userdata.counter = 0
             return 'timed_out'
 
-        dip = pnp.staticDip(gripper_length=0.15)    # EEf frame is gripper, so factoring in the gripper height.
+        dip = pnp.staticDip(gripper_length=0.145)    # EEf frame is gripper, so factoring in the gripper height.
         rospy.sleep(0.1)
         if dip:
             userdata.counter = 0
@@ -427,7 +437,7 @@ class Grasp_object(State):
             userdata.counter = 0
             return 'timed_out'
 
-        gr = gripper_to_pos(150, 60, 200, False)    # GRIPPER TO POSITION 150
+        gr = gripper_to_pos(255, 60, 200, False)    # GRIPPER TO POSITION 150
         rospy.sleep(1)
         if gr:
             userdata.counter = 0
