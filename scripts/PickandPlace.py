@@ -45,8 +45,8 @@ class PickAndPlace(object):
         # group.set_planner_id("BiEST")
         # group.set_planner_id("trajopt_interface/TrajOptPlanner")
         # group.set_planner_id("TRRT")
-        group.set_max_velocity_scaling_factor(0.5)
-        group.set_max_acceleration_scaling_factor(0.5)
+        group.set_max_velocity_scaling_factor(0.75)
+        group.set_max_acceleration_scaling_factor(0.75)
 
         display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                        moveit_msgs.msg.DisplayTrajectory,
@@ -76,6 +76,8 @@ class PickAndPlace(object):
         self.target_location_y = -100
         self.target_location_z = -100
         self.onion_color = None
+        self.prev_placex = None
+        self.prev_placey = None
         # self.onion_index = 0
         # Save some commenly used variables in the setup class
         self.ref_link = self.group.get_pose_reference_frame()
@@ -450,7 +452,7 @@ class PickAndPlace(object):
         print("Attempting to reach viewpoint\n")
         group = self.group
         # view_joint_angles = [-0.6432392597198486, -2.6825577221312464, -1.0882757345782679, -0.23568494737658696, -2.2726433912860315, -4.365030709897177]
-        view_joint_angles = [-0.6475113073932093, -1.9155713520445765, -1.4149178266525269, -3.124627252618307, 2.7653942108154297, 0.014964444562792778]
+        view_joint_angles = [-0.8765071074115198, -2.1043888531126917, -1.0770100355148315, -3.054615160027975, 2.5443508625030518, 0.21461153030395508]
         joint_angles = {'elbow_joint': view_joint_angles[0],
                         'shoulder_lift_joint': view_joint_angles[1],
                         'shoulder_pan_joint': view_joint_angles[2],
@@ -585,11 +587,26 @@ class PickAndPlace(object):
         group = self.group
         ori = group.get_current_pose().pose.orientation
         miny = 0.25
-        maxy = 0.45
-        minx = -0.45
-        maxx = -0.325
-        yval = miny + (maxy-miny)*random.random()
-        xval = minx + (maxx-minx)*random.random()
+        maxy = 0.5
+        minx = -0.5
+        maxx = -0.3
+        not_updated = True
+        while not_updated:
+            # yval = miny + (maxy-miny)*random.random()
+            # xval = minx + (maxx-minx)*random.random()
+            yval = random.uniform(miny, maxy)
+            xval = random.uniform(minx, maxx)
+            if self.prev_placex != None and self.prev_placey != None:
+                if abs(xval - self.prev_placex) > 0.05 and abs(yval - self.prev_placey) > 0.05:
+                    self.prev_placex = xval
+                    self.prev_placey = yval
+                    not_updated = False
+                    print("Got new place coordinates!")
+                else:
+                    not_updated = True
+            else: 
+                not_updated = False
+                print("First time place coordinates!")
         current_pose = self.group.get_current_pose().pose
         onConveyor = self.go_to_pose_goal(ori.x,ori.y,ori.z,ori.w, xval, yval, current_pose.position.z - 0.05,
                                             allow_replanning, planning_time, tolerance)

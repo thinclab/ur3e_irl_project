@@ -69,7 +69,7 @@ class Get_info(State):
 
     def execute(self, userdata):
         # rospy.loginfo('Executing state: Get_info')
-        # pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
+        pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
         gripper_to_pos(50, 60, 200, False)    # GRIPPER TO POSITION 50
         self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
         if userdata.counter >= 500:
