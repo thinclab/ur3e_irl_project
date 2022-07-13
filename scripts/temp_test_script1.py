@@ -283,7 +283,7 @@ class PickAndPlace(object):
     def goto_home(self, tolerance=0.0001, goal_tol=0.0001, orientation_tol=0.0001):
 
         group = self.group
-        home_joint_angles = [-1.3332440853118896, -1.4162713301232834, -1.291180435811178, -1.9400388203062953, 1.6422836780548096, -0.00906402269472295]
+        home_joint_angles = [-1.3332440853118896, -1.4162713301232834, -1.28180435811178, -1.94752203062953, 1.5338246822357178, 0.04197981208562851]
         joint_angles = {'elbow_joint': home_joint_angles[0],
                         'shoulder_lift_joint': home_joint_angles[1],
                         'shoulder_pan_joint': home_joint_angles[2],
@@ -625,22 +625,22 @@ def main():
         # pnp.remove_all_markers()
 
         import random
-        for _ in range(10):
+        for _ in range(1):
             pnp.goto_home()
             # pnp.view()
-            current_pose = group.get_current_pose().pose
-            pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 
-                                random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
+            # current_pose = group.get_current_pose().pose
             # pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 
-            #             0, 0.45, 1.2, allow_replanning, planning_time, thresh = 0.1)
+                                # random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
+            pnp.go_to_pose_goal(1.0, 0, 0, 0, 
+                        0, 0.40, 1.0, allow_replanning, planning_time, thresh = 0.1)
             rospy.sleep(0.1)
-            current_pose = group.get_current_pose().pose
-            pnp.target_location_x = current_pose.position.x
-            pnp.target_location_y = current_pose.position.y
-            pnp.target_location_z = 0.8
-            pnp.staticDip(gripper_length=0.15)
-            print("Current pose: \n", group.get_current_pose().pose)
-            pnp.liftgripper()
+            # current_pose = group.get_current_pose().pose
+            # pnp.target_location_x = current_pose.position.x
+            # pnp.target_location_y = current_pose.position.y
+            # pnp.target_location_z = 0.8
+            # pnp.staticDip(gripper_length=0.15)
+            # print("Current pose: \n", group.get_current_pose().pose)
+            # pnp.liftgripper()
             # rospy.sleep(0.1)
             # if random.random() < 0.45:
             #     pnp.view()
