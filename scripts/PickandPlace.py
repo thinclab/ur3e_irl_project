@@ -15,6 +15,7 @@ import visualization_msgs.msg
 from math import pi
 from tf.transformations import quaternion_from_euler, quaternion_multiply
 from six.moves import input  # Python 3 compatible alternative for raw_input
+import math
 
 # define some colours for convenience
 COLOR_RED = std_msgs.msg.ColorRGBA(1.0, 0.0, 0.0, 1.0)
@@ -251,6 +252,7 @@ class PickAndPlace(object):
         # Allow some leeway in position(meters) and orientation (radians)
         group.set_goal_position_tolerance(thresh)
         group.set_goal_orientation_tolerance(thresh)
+        group.set_goal_tolerance(thresh)
 
         pose_goal = geometry_msgs.msg.Pose()
         pose_goal.orientation.x = ox
@@ -260,13 +262,56 @@ class PickAndPlace(object):
         pose_goal.position.x = px
         pose_goal.position.y = py
         pose_goal.position.z = pz
-        # group.set_pose_target(pose_goal)
-        group.set_joint_value_target(pose_goal, True)   # The 2nd arg is to say if approx ik is allowed
+#        group.set_pose_target(pose_goal)
+        group.stop()
+        group.clear_pose_targets()
+#        print(group.get_goal_position_tolerance())
+#        print(group.get_goal_orientation_tolerance())
+#        print(group.get_goal_joint_tolerance())
+
+        try:
+            group.set_joint_value_target(pose_goal)   # The 2nd arg is to say if approx ik is allowed
+        except:
+            group.set_joint_value_target(pose_goal, True)   # Try again with approx IK, The 2nd arg is to say if approx ik is allowed
         group.allow_replanning(allow_replanning)
         group.set_planning_time(planning_time)
         # (plan, fraction) = group.compute_cartesian_path([pose_goal], 0.001, 0.0, avoid_collisions=True)
         # group.execute(plan, wait=True)
-        group.go(wait=True)
+#        group.go(wait=True)
+
+
+        start_pose = group.get_current_pose()
+        print("Current pose: ", start_pose)
+        print("Goal pose ", pose_goal)
+        group.go(wait=False)
+        try:
+            timeout = 10
+            complete = False
+            start_time = rospy.Time.now()
+            last_distance = 0
+            moving_yet = False
+            while not complete:
+               current_pose = group.get_current_pose()
+               distance = math.sqrt((current_pose.pose.position.x - pose_goal.position.x)*(current_pose.pose.position.x - pose_goal.position.x) + (current_pose.pose.position.y - pose_goal.position.y)*(current_pose.pose.position.y - pose_goal.position.y) + (current_pose.pose.position.z - pose_goal.position.z)*(current_pose.pose.position.z - pose_goal.position.z))
+#               if (distance < thresh):
+#                   complete = True
+               distance_start = math.sqrt((start_pose.pose.position.x - current_pose.pose.position.x)*(start_pose.pose.position.x - current_pose.pose.position.x) + (start_pose.pose.position.y - current_pose.pose.position.y)*(start_pose.pose.position.y - current_pose.pose.position.y) + (start_pose.pose.position.z - current_pose.pose.position.z)*(start_pose.pose.position.z - current_pose.pose.position.z))
+               if distance_start > 0.001:
+                   moving_yet = True
+ #              print("start distance: ", distance_start, " ", moving_yet)
+ #              print(abs(distance - last_distance))
+               if abs(distance - last_distance) < 0.00005 and moving_yet:
+                   print("COMPLETE")
+                   complete = True
+               if (rospy.Time.now() - start_time).to_sec() > timeout:
+                   print("TIMEOUT")
+                   complete = True
+               last_distance = distance
+               rospy.sleep(0.1)
+        except KeyboardInterrupt:
+            rospy.shutdown()
+            return False
+
         group.stop()
         group.clear_pose_targets()
 
@@ -292,7 +337,7 @@ class PickAndPlace(object):
         rospy.sleep(0.05)
         return status
 
-    def staticDip(self, gripper_length = 0.15, tolerance=0.0055):
+    def staticDip(self, gripper_length = 0.15, tolerance=0.0055, offset=0):
         
         group = self.group
         current_pose = group.get_current_pose()
@@ -329,14 +374,15 @@ class PickAndPlace(object):
         before_dip = current_pose.pose.position.z
         print("Gripper length given: ", gripper_length)
         print("Attempting to dip to (x,y,z): ", self.target_location_x, self.target_location_y, self.target_location_z + gripper_length,)
-        group.set_max_velocity_scaling_factor(0.25)
-        group.set_max_acceleration_scaling_factor(0.25)
+
+        if offset > 0:
+            group.set_max_velocity_scaling_factor(0.1)
+            group.set_max_acceleration_scaling_factor(0.1)
         while not dip:
             dip = self.go_to_pose_goal(current_pose.pose.orientation.x, current_pose.pose.orientation.y, current_pose.pose.orientation.z, current_pose.pose.orientation.w, self.target_location_x,  # accounting for tolerance error
                                     self.target_location_y,  
-                                    self.target_location_z + gripper_length,  # For UR, eef frame is wrist_3, so we add the gripper_length to that for right amount of dip
+                                    self.target_location_z + (gripper_length + offset),  # For UR, eef frame is wrist_3, so we add the gripper_length to that for right amount of dip
                                     allow_replanning, planning_time, tolerance/5)
-            rospy.sleep(0.01)
             print("Dip value: ", dip)
         current_pose = group.get_current_pose()
         # self.remove_all_markers()
@@ -437,7 +483,8 @@ class PickAndPlace(object):
             abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
             abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
 
-        while diff:
+#        while diff:
+        try:
             self.go_to_joint_goal(home_joint_angles, True, 5.0, goal_tol=goal_tol,
                                   orientation_tol=orientation_tol)
             rospy.sleep(0.05)
@@ -452,6 +499,8 @@ class PickAndPlace(object):
                 abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
             if diff:
                 rospy.sleep(0.05)
+        except KeyboardInterrupt:
+            return False
         return True
 
     def view(self, tol=0.001, goal_tol=0.001, orientation_tol=0.001):
@@ -474,7 +523,8 @@ class PickAndPlace(object):
             abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
             abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
 
-        while diff:
+#        while diff:
+        try:
             self.go_to_joint_goal(view_joint_angles, True, 5.0, goal_tol=goal_tol,
                                   orientation_tol=orientation_tol)
             rospy.sleep(0.05)
@@ -489,6 +539,8 @@ class PickAndPlace(object):
                 abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
             if diff:
                 rospy.sleep(0.05)
+        except KeyboardInterrupt:
+            return False
         return True
 
     def goto_bin(self, tolerance=0.001, goal_tol=0.001, orientation_tol=0.001, usePoseGoal = False):
@@ -527,7 +579,8 @@ class PickAndPlace(object):
                 abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
                 abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
 
-            while diff:
+#            while diff:
+            try:
                 self.go_to_joint_goal(bin_joint_angles, allow_replanning, planning_time, goal_tol=goal_tol,
                                     orientation_tol=orientation_tol)
                 rospy.sleep(0.05)
@@ -542,6 +595,8 @@ class PickAndPlace(object):
                     abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
                 if diff:
                     rospy.sleep(0.05)
+            except KeyboardInterrupt:
+                return False
             reached = True       
         return reached
 
@@ -551,8 +606,12 @@ class PickAndPlace(object):
         planning_time = 10
         print("Attempting to reach place on conv\n")
         group = self.group
-        conv_joint_angles = [-0.400000000000, -2.350000000000, -0.460000000000, -1.90000000000, 1.60000000000, -0.030000000000]
-
+        # right side of conveyor
+#        conv_joint_angles = [-0.400000000000, -2.350000000000, -0.460000000000, -1.90000000000, 1.60000000000, -0.030000000000]
+        # left side of converyor (angled)
+#        conv_joint_angles = [-1.2287664413452148, -2.502759119073385, -1.9036911169635218, -0.24223442495379643, 0.7643774151802063, -0.11600143114198858]
+        conv_joint_angles = [-1.6897367238998413, -2.1709257564940394, -1.015904728566305, -1.5116153743914147, 0.6815958619117737, 0.2100924402475357]
+#[-1.01605224609375, -2.17091765026235, -1.6899521986590784, -1.5116087359241028, 0.6814558506011963, 0.20997072756290436]
         joint_angles = {'elbow_joint': conv_joint_angles[0],
                             'shoulder_lift_joint': conv_joint_angles[1],
                             'shoulder_pan_joint': conv_joint_angles[2],
@@ -568,7 +627,8 @@ class PickAndPlace(object):
             abs(joint_angles['wrist_2_joint']-current_joints[4]) > tol or \
             abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
 
-        while diff:
+#        while diff:
+        try:
             self.go_to_joint_goal(conv_joint_angles, allow_replanning, planning_time, goal_tol=goal_tol,
                                 orientation_tol=orientation_tol)
             rospy.sleep(0.05)
@@ -583,6 +643,8 @@ class PickAndPlace(object):
                 abs(joint_angles['wrist_3_joint']-current_joints[5]) > tol
             if diff:
                 rospy.sleep(0.05)
+        except KeyboardInterrupt:
+            return false
         return True
 
 
@@ -595,27 +657,27 @@ class PickAndPlace(object):
         ori = group.get_current_pose().pose.orientation
         miny = 0.25
         maxy = 0.5
-        minx = -0.5
-        maxx = -0.3
-        not_updated = True
-        while not_updated:
-            # yval = miny + (maxy-miny)*random.random()
-            # xval = minx + (maxx-minx)*random.random()
-            yval = random.uniform(miny, maxy)
-            xval = random.uniform(minx, maxx)
-            if self.prev_placex != None and self.prev_placey != None:
-                if abs(xval - self.prev_placex) > 0.05 and abs(yval - self.prev_placey) > 0.05:
-                    self.prev_placex = xval
-                    self.prev_placey = yval
-                    not_updated = False
-                    print("Got new place coordinates!")
-                else:
-                    not_updated = True
-            else: 
-                not_updated = False
-                print("First time place coordinates!")
+#        minx = -0.5
+#        maxx = -0.3
+#        not_updated = True
+#        while not_updated:
+#            # yval = miny + (maxy-miny)*random.random()
+#            # xval = minx + (maxx-minx)*random.random()
+#            yval = random.uniform(miny, maxy)
+#            xval = random.uniform(minx, maxx)
+#            if self.prev_placex != None and self.prev_placey != None:
+#                if abs(xval - self.prev_placex) > 0.05 and abs(yval - self.prev_placey) > 0.05:
+#                    self.prev_placex = xval
+#                    self.prev_placey = yval
+#                    not_updated = False
+#                    print("Got new place coordinates!")
+#                else:
+#                    not_updated = True
+#            else: 
+#                not_updated = False
+#                print("First time place coordinates!")
         current_pose = self.group.get_current_pose().pose
-        onConveyor = self.go_to_pose_goal(ori.x,ori.y,ori.z,ori.w, xval, yval, current_pose.position.z - 0.05,
+        onConveyor = self.go_to_pose_goal(ori.x,ori.y,ori.z,ori.w, current_pose.position.x, current_pose.position.y, current_pose.position.z - 0.05,
                                             allow_replanning, planning_time, tolerance)
         rospy.sleep(0.02)
         # current_pose = group.get_current_pose().pose

@@ -180,7 +180,7 @@ def PlaceOnConveyor():
         # Open the container
         with PlaceOnConveyor:    
             ppv.StateMachine.add('PLACEONCONVEYOR', ppv.Placeonconveyor(), 
-                            transitions={'success':'DETACH', 
+                            transitions={'success':'SUCCEEDED', 
                                         'failed':'PLACEONCONVEYOR',
                                         'timed_out': 'TIMED_OUT'},
                             remapping={'color': 'sm_color','counter':'sm_counter'})
@@ -279,7 +279,7 @@ def main():
     outcome = actList[4]()
     t2 = time()
     print("Time before while loop: ", t2-t1)
-    while not ppv.rospy.is_shutdown() and outcome != 'SORT COMPLETE':
+    while not ppv.rospy.is_shutdown():
         print ('\n OUTCOME: ', outcome)
         # ppv.rospy.sleep(10)
         try:
@@ -291,9 +291,8 @@ def main():
                 print("\nTimed out/Failed, so going back to claim again!")
                 outcome = actList[4]()
             if outcome == 'SORT COMPLETE':
-                print("\nNo more onions to sort, sleeping for 3 seconds")
-                ppv.rospy.sleep(3)
-                outcome = actList[4]()
+                print("\nNo more onions to sort, sleeping for 1 seconds")
+                ppv.rospy.sleep(1)
         except ppv.rospy.ROSInterruptException:
             ppv.rospy.signal_shutdown("Shutting down node, ROS interrupt received!")
         except KeyboardInterrupt:

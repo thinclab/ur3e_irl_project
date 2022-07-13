@@ -98,7 +98,7 @@ class Get_info(State):
             else:
                 print ('\nSort Complete!\n')
                 # return 'completed'
-                return 'updated'
+                return 'not_updated'
         else:
             userdata.counter += 1
             # print("I'm not updated")
@@ -236,8 +236,8 @@ class Claim(State):
             userdata.counter = 0
             return 'timed_out'
 
-        if self.empty_conv == self.empty_conv_threshold:
-            return 'completed'
+#        if self.empty_conv == self.empty_conv_threshold:
+#            return 'completed'
 
         if len(userdata.color) == 0:
             pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
@@ -256,17 +256,17 @@ class Claim(State):
             done_onions = 0
             self.empty_conv += 1
             # print('not found move')
-            return 'move'
+            return 'not_found'
 
         max_index = len(userdata.color)
         # print ('\nMax index is = ', max_index)
         # pnp.onion_index = 0
-        for i in reversed(range(max_index)):
+        for i in range(max_index):
             # if len(userdata.x) >= i:    # Sometimes we get color but no location, so double-checking.
             try:
                 # predict the pickup location here:
                 print("Onion is currently at: ", userdata.x[i])
-                onion_future_x = userdata.x[i] - (pnp.conveyor_speed * pnp.pick_time)
+                onion_future_x = userdata.x[i] + (pnp.conveyor_speed * pnp.pick_time)
                 print("Future location: ", onion_future_x)
                 if onion_future_x > -0.25 and onion_future_x < 0.2:  # Numbers estd using current conv.
                     pnp.target_location_x = onion_future_x
@@ -298,9 +298,9 @@ class Claim(State):
             pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
             msg = Empty()
             # rospy.sleep(0.1)
-            self.conv_pub.publish(msg)
-            rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
-            self.conv_pub.publish(msg)
+#            self.conv_pub.publish(msg)
+#            rospy.sleep(3.25)    # With the conveyor speed controller knob at 35, takes around 3 secs to move to next batch.
+#            self.conv_pub.publish(msg)
             # rospy.sleep(0.1)
             userdata.x = []
             userdata.y = []
@@ -310,7 +310,7 @@ class Claim(State):
             max_index = 0
             done_onions = 0
             self.empty_conv += 1
-            return 'move'
+            return 'not_found'
         else:
             self.empty_conv = 0
             done_onions = 0
@@ -366,8 +366,10 @@ class CheckNPick(State):
         self.z = []
         self.color = []
         self.is_updated = False
-#        self.callback_check(rospy.wait_for_message("/object_location", OBlobs))
-#        rospy.sleep(0.1)
+        self.dip_time = 0.75
+        if pnp.pick_time <= 0:
+            self.callback_check(rospy.wait_for_message("/object_location", OBlobs))
+            rospy.sleep(0.1)
 
     def callback_check(self, msg):
         self.x = msg.x
@@ -380,17 +382,18 @@ class CheckNPick(State):
     def execute(self, userdata):
         global pnp, var_height
 
-        # calculate time to wait
-        print("It is now ", rospy.Time.now().to_sec())
-        print("Waiting until: ", pnp.pick_at_secs - 0.75 )
+        if pnp.pick_time > 0:
+            # calculate time to wait
+            print("It is now ", rospy.Time.now().to_sec())
+            print("Waiting until: ", pnp.pick_at_secs - self.dip_time )
 
-        wait_time = (pnp.pick_at_secs - 0.75 ) - rospy.Time.now().to_sec() 
+            wait_time = (pnp.pick_at_secs - self.dip_time ) - rospy.Time.now().to_sec() 
 
-        if wait_time < 0:
-            return 'failed'
-        else:
-            rospy.sleep(wait_time)
-            return 'success'
+            if wait_time < 0:
+                return 'success'
+            else:
+                rospy.sleep(wait_time)
+                return 'success'
 
         if len(userdata.color) == 0:
             userdata.x = self.x
@@ -439,7 +442,7 @@ class Dipdown(State):
             userdata.counter = 0
             return 'timed_out'
 
-        dip = pnp.staticDip(gripper_length=0.145)    # EEf frame is gripper, so factoring in the gripper height.
+        dip = pnp.staticDip(gripper_length=0.15)    # EEf frame is gripper, so factoring in the gripper height.
         rospy.sleep(0.1)
         if dip:
             userdata.counter = 0
@@ -463,7 +466,7 @@ class Grasp_object(State):
             return 'timed_out'
 
         gr = gripper_to_pos(255, 60, 200, False)    # GRIPPER TO POSITION 150
-        rospy.sleep(1)
+
         if gr:
             userdata.counter = 0
             current_state = vals2sid(ol=3, eefl=3, pred=2, listst=2)
@@ -610,7 +613,7 @@ class Placeonconveyor(State):
         rospy.sleep(0.01)
         if place1:
             place2 = pnp.placeOnConveyor()
-            if place2:
+            if True:
                 detach = gripper_to_pos(0, 60, 200, False)    # GRIPPER TO POSITION 0
                 userdata.counter = 0
                 current_state = vals2sid(ol=0, eefl=0, pred=2, listst=2)
