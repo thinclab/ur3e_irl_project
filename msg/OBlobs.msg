@@ -5,3 +5,4 @@ float64[] x  # x coordinate in the world
 float64[] y  # y coordinate in the world
 float64[] z  # z coordinate in the world
 float64[] color # Describes blemished or unblemished (0 or 1)
+time detected_ts # Timestamp of when the original RGB image was produced that resulted in these detected blocks

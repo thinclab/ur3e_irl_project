@@ -95,6 +95,9 @@ class PickAndPlace(object):
         rospy.sleep(0.1)  # publisher needs some time to connect Rviz
         self.marker_id_counter = 0  # give each marker a unique idea
 
+        self.conveyor_speed = 0
+        self.pick_time = 0
+
     def display_sphere(self, pose, radius=0.05, color=COLOR_GREEN):
         """ Utility function to visualize the goal pose"""
 

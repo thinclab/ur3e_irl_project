@@ -47,12 +47,13 @@ def vals2sid(ol, eefl, pred, listst, nOnionLoc=4, nEEFLoc=4, nPredict=3, nlistID
 class Get_info(State):
     def __init__(self):
         State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'completed'],
-                       input_keys=['x', 'y', 'z', 'color', 'counter'],
-                       output_keys=['x', 'y', 'z', 'color', 'counter'])
+                       input_keys=['x', 'y', 'z', 'color', 'counter', 'time'],
+                       output_keys=['x', 'y', 'z', 'color', 'counter', 'time'])
         self.x = []
         self.y = []
         self.z = []
         self.color = []
+        self.time = 0
         self.is_updated = False
         # camera_node()
         self.callback_vision(rospy.wait_for_message("/object_location", OBlobs))
@@ -63,6 +64,7 @@ class Get_info(State):
         self.y = msg.y
         self.z = msg.z
         self.color = msg.color
+        self.time = msg.detected_ts
         # print '\nCallback data x,y,z in Get_info are: \n', self.x,self.y,self.z
         # rospy.sleep(5)
         self.is_updated = True
@@ -84,14 +86,17 @@ class Get_info(State):
                 userdata.y = self.y
                 userdata.z = self.z
                 userdata.color = self.color
+#                userdata.time = float(str(self.time.secs) + "." + str(self.time.nsecs))
+                pnp.time_hack = float(str(self.time.secs) + "." + str(self.time.nsecs))
+                print("Onion detected at: ", pnp.time_hack)
                 userdata.counter = 0
                 rospy.sleep(0.01)
-                # print("I'm updated")
+                print("I'm updated")
                 # print '\nUser data x,y,z in Get_info are: \n', userdata.x,userdata.y,userdata.z
                 # rospy.sleep(5)
                 return 'updated'
             else:
-                # print ('\nSort Complete!\n')
+                print ('\nSort Complete!\n')
                 # return 'completed'
                 return 'updated'
         else:
@@ -215,8 +220,8 @@ class Get_info_w_check(State):
 class Claim(State):
     def __init__(self):
         State.__init__(self, outcomes=['updated', 'not_updated', 'timed_out', 'not_found', 'completed', 'move'],
-                       input_keys=['x', 'y', 'z', 'color', 'counter'],
-                       output_keys=['x', 'y', 'z', 'color', 'counter'])
+                       input_keys=['x', 'y', 'z', 'color', 'counter', 'time'],
+                       output_keys=['x', 'y', 'z', 'color', 'counter', 'time'])
         self.is_updated = False
         self.conv_pub = rospy.Publisher('/toggle_led', Empty, queue_size = 1)
         self.empty_conv = 0
@@ -225,6 +230,7 @@ class Claim(State):
 
     def execute(self, userdata):
         global pnp, done_onions, current_state, var_height
+
         # rospy.loginfo('Executing state: Claim')
         if userdata.counter >= 50:
             userdata.counter = 0
@@ -255,11 +261,15 @@ class Claim(State):
         max_index = len(userdata.color)
         # print ('\nMax index is = ', max_index)
         # pnp.onion_index = 0
-        for i in range(max_index):
+        for i in reversed(range(max_index)):
             # if len(userdata.x) >= i:    # Sometimes we get color but no location, so double-checking.
             try:
-                if userdata.x[i] > -0.25 and userdata.x[i] < 0.2:  # Numbers estd using current conv.
-                    pnp.target_location_x = userdata.x[i]
+                # predict the pickup location here:
+                print("Onion is currently at: ", userdata.x[i])
+                onion_future_x = userdata.x[i] - (pnp.conveyor_speed * pnp.pick_time)
+                print("Future location: ", onion_future_x)
+                if onion_future_x > -0.25 and onion_future_x < 0.2:  # Numbers estd using current conv.
+                    pnp.target_location_x = onion_future_x
                     pnp.target_location_y = userdata.y[i]
                     if var_height:
                         pnp.target_location_z = userdata.z[i]
@@ -267,6 +277,8 @@ class Claim(State):
                     else:
                         pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
+                    pnp.detect_time = float(pnp.time_hack)
+                    pnp.pick_at_secs = float(pnp.time_hack) + pnp.pick_time
                     # pnp.onion_index = i
                     self.is_updated = True
                     break
@@ -354,8 +366,8 @@ class CheckNPick(State):
         self.z = []
         self.color = []
         self.is_updated = False
-        self.callback_check(rospy.wait_for_message("/object_location", OBlobs))
-        rospy.sleep(0.1)
+#        self.callback_check(rospy.wait_for_message("/object_location", OBlobs))
+#        rospy.sleep(0.1)
 
     def callback_check(self, msg):
         self.x = msg.x
@@ -367,6 +379,19 @@ class CheckNPick(State):
 
     def execute(self, userdata):
         global pnp, var_height
+
+        # calculate time to wait
+        print("It is now ", rospy.Time.now().to_sec())
+        print("Waiting until: ", pnp.pick_at_secs - 0.75 )
+
+        wait_time = (pnp.pick_at_secs - 0.75 ) - rospy.Time.now().to_sec() 
+
+        if wait_time < 0:
+            return 'failed'
+        else:
+            rospy.sleep(wait_time)
+            return 'success'
+
         if len(userdata.color) == 0:
             userdata.x = self.x
             userdata.y = self.y
