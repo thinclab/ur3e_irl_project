@@ -626,20 +626,20 @@ def main():
 
         import random
         for _ in range(1):
-            pnp.goto_home()
+            # pnp.goto_home()
             # pnp.view()
             # current_pose = group.get_current_pose().pose
             # pnp.go_to_pose_goal(current_pose.orientation.x, current_pose.orientation.y, current_pose.orientation.z, current_pose.orientation.w, 
                                 # random.randint(-45, 45)/100, random.randint(10, 50)/100,random.randint(110, 120)/100, allow_replanning, planning_time, thresh = 0.1)
-            pnp.go_to_pose_goal(1.0, 0, 0, 0, 
-                        0, 0.40, 1.0, allow_replanning, planning_time, thresh = 0.1)
-            rospy.sleep(0.1)
+            # pnp.go_to_pose_goal(1.0, 0, 0, 0, 
+            #             0, 0.40, 0.925, allow_replanning, planning_time, thresh = 0.1)
+            # rospy.sleep(0.1)
             # current_pose = group.get_current_pose().pose
             # pnp.target_location_x = current_pose.position.x
             # pnp.target_location_y = current_pose.position.y
             # pnp.target_location_z = 0.8
             # pnp.staticDip(gripper_length=0.15)
-            # print("Current pose: \n", group.get_current_pose().pose)
+            print("Current pose: \n", group.get_current_pose().pose)
             # pnp.liftgripper()
             # rospy.sleep(0.1)
             # if random.random() < 0.45:
