@@ -442,7 +442,7 @@ class Dipdown(State):
             userdata.counter = 0
             return 'timed_out'
 
-        dip = pnp.staticDip(gripper_length=0.15)    # EEf frame is gripper, so factoring in the gripper height.
+        dip = pnp.staticDip(gripper_length=0.13)    # EEf frame is gripper, so factoring in the gripper height.
         rospy.sleep(0.1)
         if dip:
             userdata.counter = 0

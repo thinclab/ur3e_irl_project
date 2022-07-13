@@ -89,7 +89,7 @@
   </joint-->
 
   <joint name="pillar_to_base" type="fixed">
-    <origin xyz="0 0 0.4" rpy="0 0 0"/>
+    <origin xyz="0 0 0.836" rpy="0 0 0"/>
     <parent link="support_pillar"/>
     <child link="base_link"/>
   </joint>
