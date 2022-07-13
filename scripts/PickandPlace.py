@@ -508,7 +508,7 @@ class PickAndPlace(object):
         print("Attempting to reach viewpoint\n")
         group = self.group
         # view_joint_angles = [-0.6432392597198486, -2.6825577221312464, -1.0882757345782679, -0.23568494737658696, -2.2726433912860315, -4.365030709897177]
-        view_joint_angles = [-0.8765071074115198, -2.1043888531126917, -1.0770100355148315, -3.054615160027975, 2.5443508625030518, 0.21461153030395508]
+        view_joint_angles = [-0.6475113073932093, -1.9155713520445765, -1.4149178266525269, -3.124627252618307, 2.7653942108154297, 0.014964444562792778]
         joint_angles = {'elbow_joint': view_joint_angles[0],
                         'shoulder_lift_joint': view_joint_angles[1],
                         'shoulder_pan_joint': view_joint_angles[2],
