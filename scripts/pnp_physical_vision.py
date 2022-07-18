@@ -277,8 +277,8 @@ class Claim(State):
                     else:
                         pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
-                    pnp.detect_time = float(pnp.time_hack)
-                    pnp.pick_at_secs = float(pnp.time_hack) + pnp.pick_time
+#                    pnp.detect_time = float(pnp.time_hack)
+#                    pnp.pick_at_secs = float(pnp.time_hack) + pnp.pick_time
                     # pnp.onion_index = i
                     self.is_updated = True
                     break
@@ -442,7 +442,7 @@ class Dipdown(State):
             userdata.counter = 0
             return 'timed_out'
 
-        dip = pnp.staticDip(gripper_length=0.13)    # EEf frame is gripper, so factoring in the gripper height.
+        dip = pnp.staticDip(gripper_length=0.121)    # EEf frame is gripper, so factoring in the gripper height.
         rospy.sleep(0.1)
         if dip:
             userdata.counter = 0

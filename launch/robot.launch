@@ -22,7 +22,7 @@
 
 <!-- Custom arguments -->
 <arg name="launchconveyor" default="true"/>
-<arg name="conv_name" default="vovrc" /> <!-- Two values are lab and vovrc -->
+<arg name="conv_name" default="lab" /> <!-- Two values are lab and vovrc -->
 <arg name="rviz_gui" default="true" />
 
 <!-- Conveyor spawning in gazebo if="$(eval arg('conveyor') ==true)"> -->
