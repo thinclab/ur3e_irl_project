@@ -266,7 +266,6 @@ def main():
     ppv.rospy.init_node('policy_exec_phys', anonymous=True, disable_signals=False)
     ppv.pnp.goto_home(tolerance=0.1, goal_tol=0.1, orientation_tol=0.1)
     ppv.var_height = args.var_height
-
     outcome = actList[4]()
     t2 = time()
     print("Time before while loop: ", t2-t1)

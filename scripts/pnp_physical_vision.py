@@ -178,14 +178,15 @@ class Get_info_w_check(State):
 
         arxiv_len = len(self.x_arxiv)
         if arxiv_len == 0:
-            print('\nSort Complete!\n')
+            # print('\nSort Complete!\n')
             self.is_updated = False
             userdata.x = []
             userdata.y = []
             userdata.z = []
             userdata.color = []
             userdata.counter = 0
-            return 'completed'
+            # return 'completed'
+            return 'updated'
 
         x_output = []
         y_output = []
@@ -262,6 +263,7 @@ class Claim(State):
                     pnp.target_location_y = userdata.y[i]
                     if var_height:
                         pnp.target_location_z = userdata.z[i]
+                        print("Using variable height: ", pnp.target_location_z)
                     else:
                         pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
@@ -384,6 +386,7 @@ class CheckNPick(State):
                     pnp.target_location_y = userdata.y[i]
                     if var_height:
                         pnp.target_location_z = userdata.z[i]
+                        print("Using variable height: ", pnp.target_location_z)
                     else:
                         pnp.target_location_z = 0.8     # NOTE: We're manually overriding z values because there's a 4cm margin of error in the camera values.
                     pnp.onion_color = userdata.color[i]
